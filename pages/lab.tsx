@@ -1,5 +1,5 @@
-import IdentifyKeywords from "@/components/OLD/identify-keywords";
-import ModelTrainer from "@/components/OLD/model-trainer";
+import IdentifyKeywords from "@/.next/OLD/identify-keywords";
+import ModelTrainer from "@/.next/OLD/model-trainer";
 import styles from "@/styles/lab.module.css";
 
 // Connect to github

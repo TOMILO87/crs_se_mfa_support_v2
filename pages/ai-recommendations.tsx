@@ -1,7 +1,7 @@
 /// Ge användaren feedback hur texten kan uppdateras
 
-import LoadCrsFileV4 from "@/components/OLD/load-crs-file-v4";
-import ModelTrainer from "@/components/OLD/model-trainer";
+import LoadCrsFileV4 from "@/.next/OLD/load-crs-file-v4";
+import ModelTrainer from "@/.next/OLD/model-trainer";
 import styles from "@/styles/lab.module.css";
 import { useEffect, useState } from "react";
 

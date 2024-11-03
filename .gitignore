@@ -16,10 +16,6 @@
 # production
 /build
 
-# pre-trained models and training data
-/public/models/bert-base-multilingual-cased
-/data
-
 # misc
 .DS_Store
 *.pem
@@ -38,3 +34,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts/data
+
+# pre-trained models and training data etc.
+/public/models/bert-base-multilingual-cased
+/data
+/OLD
