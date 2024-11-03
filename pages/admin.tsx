@@ -3,7 +3,6 @@
 import LoadFile from "@/components/load-file";
 import { SelectedFileContextProvider } from "@/context/selected-file-context";
 import styles from "@/styles/admin.module.css";
-import ModelTrainer from "./OLD/model-trainer";
 import FieldSelector from "@/components/ai-recommendations/field-selector";
 import IdentifyKeywords from "@/components/ai-recommendations/identify-keywords";
 import { AiRecommendationsContextProvider } from "@/context/ai-recommendations-context";
