@@ -1,0 +1,20 @@
+.main {
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Center vertically */
+  align-items: center; /* Center horizontally */
+  min-height: 100vh; /* Make the container fill the viewport height */
+  font-size: 2rem;
+  gap: 1rem; /* Add space between your links */
+  background-color: lightgreen;
+}
+
+.main a {
+  text-decoration: none; /* Remove underline by default */
+  transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition for the hover effect */
+}
+
+.main a:hover {
+  background-color: yellow; /* Highlight with background color */
+  color: black; /* Change the text color */
+}
