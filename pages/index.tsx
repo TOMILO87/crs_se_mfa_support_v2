@@ -1,6 +1,7 @@
 import Head from "next/head";
 import { Inter } from "next/font/google";
-import styles from "@/styles/home.module.css";
+//import styles from "@/styles/home.module.css";
+//<main className={`${styles.main} ${inter.className}`}>
 import ShowOECDData from "@/components/show-oecd-data";
 import Link from "next/link";
 
@@ -15,7 +16,7 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className={`${styles.main} ${inter.className}`}>
+      <main className={`${inter.className}`}>
         <Link href="./total-country">Totalt bistånd land</Link>
         <Link href="./total-thematic">Totalt bistånd tematik</Link>
         <Link href="./ai-recommendations">AI-förslag Planit </Link>
