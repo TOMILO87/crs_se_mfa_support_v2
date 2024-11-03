@@ -42,7 +42,7 @@ export default function ModelTrainer() {
   }, [trainingData, testData, selectedField]);
 
   const createKeywordVector = (description: string): number[] => {
-    return keywords.map((keyword) => (description.includes(keyword) ? 1 : 0));
+    return keywords!.map((keyword) => (description.includes(keyword) ? 1 : 0));
   };
 
   const prepareTrainingData = () => {
@@ -60,7 +60,7 @@ export default function ModelTrainer() {
   };
 
   const createModel = () => {
-    const inputShape = [keywords.length];
+    const inputShape = [keywords!.length]; // Should ensure keywords not undefined here
     const model = tf.sequential();
     model.add(tf.layers.dense({ inputShape, units: 128, activation: "relu" }));
     model.add(tf.layers.dense({ units: 64, activation: "relu" }));
@@ -136,7 +136,7 @@ export default function ModelTrainer() {
 
       <h3>3) Test Prediction</h3>
       {trainingCompleted && (
-        <Prediction model={model} createKeywordVector={createKeywordVector} />
+        <Prediction model={model!} createKeywordVector={createKeywordVector} />
       )}
 
       {testAccuracy !== null && (
