@@ -22,7 +22,7 @@ export default function ModelPredictor() {
     const loadModel = async () => {
       try {
         const loadedModel = await tf.loadLayersModel(
-          `/model/${selectedField}/model.json`
+          `/model/${selectedField.toLocaleLowerCase}/model.json`
         );
         setModel(loadedModel);
         console.log("Model loaded successfully.");
@@ -34,7 +34,9 @@ export default function ModelPredictor() {
     // Load the keywords from the public folder
     const loadKeywords = async () => {
       try {
-        const response = await fetch(`/model/${selectedField}/keywords.json`);
+        const response = await fetch(
+          `/model/${selectedField.toLocaleLowerCase()}/keywords.json`
+        );
         const loadedKeywords = await response.json();
         setKeywords(loadedKeywords);
         console.log("Keywords loaded successfully.");
