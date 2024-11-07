@@ -3,7 +3,7 @@
 
 import FieldSelector from "@/components/ai-recommendations/field-selector";
 import IdentifyKeywords from "@/components/ai-recommendations/identify-keywords";
-import LoadFile from "@/components/load-file";
+import LoadFile from "@/components/utils/load-file";
 import { SelectedFileContextProvider } from "@/context/selected-file-context";
 import { AiRecommendationsContextProvider } from "@/context/ai-recommendations-context";
 import styles from "@/styles/admin.module.css";

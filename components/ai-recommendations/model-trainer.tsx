@@ -8,6 +8,7 @@ import Prediction from "./prediction";
 export default function ModelTrainer() {
   const MAX_CRS_ROWS_TRAIN = 5000;
   const MAX_CRS_ROWS_TEST = 5000;
+  const NUM_EPOCHS = 3;
 
   const { keywords, trainingData, testData, selectedField } =
     useAiRecommendationsContext();
@@ -60,7 +61,7 @@ export default function ModelTrainer() {
   };
 
   const createModel = () => {
-    const inputShape = [keywords!.length]; // Should ensure keywords not undefined here
+    const inputShape = [keywords!.length];
     const model = tf.sequential();
     model.add(tf.layers.dense({ inputShape, units: 128, activation: "relu" }));
     model.add(tf.layers.dense({ units: 64, activation: "relu" }));
@@ -81,7 +82,7 @@ export default function ModelTrainer() {
 
     const { xs, ys } = prepareTrainingData();
     await model.fit(xs, ys, {
-      epochs: 20,
+      epochs: NUM_EPOCHS,
       validationSplit: 0.2,
       callbacks: {
         onEpochEnd: (epoch, logs) => {
@@ -95,6 +96,19 @@ export default function ModelTrainer() {
     setTrainingCompleted(true);
     xs.dispose();
     ys.dispose();
+
+    // Save the model as a downloadable file
+    await model.save("downloads://model");
+
+    // Save keywords as JSON file
+    const keywordsBlob = new Blob([JSON.stringify(keywords)], {
+      type: "application/json",
+    });
+    const keywordsUrl = URL.createObjectURL(keywordsBlob);
+    const keywordsLink = document.createElement("a");
+    keywordsLink.href = keywordsUrl;
+    keywordsLink.download = "keywords.json";
+    keywordsLink.click();
   };
 
   const evaluateModelOnTestData = () => {
@@ -110,8 +124,8 @@ export default function ModelTrainer() {
     const xsTest = tf.tensor2d(testVectors);
     const ysTest = tf.tensor1d(testLabels, "int32");
 
-    const evaluation = model.evaluate(xsTest, ysTest) as tf.Scalar[]; // Ensure it's an array of Scalars
-    const accuracy = evaluation[1].dataSync()[0]; // Access accuracy directly
+    const evaluation = model.evaluate(xsTest, ysTest) as tf.Scalar[];
+    const accuracy = evaluation[1].dataSync()[0];
 
     setTestAccuracy(accuracy);
     console.log(`Test Accuracy: ${accuracy}`);
