@@ -22,7 +22,7 @@ export default function ModelPredictor() {
     const loadModel = async () => {
       try {
         const loadedModel = await tf.loadLayersModel(
-          `/model/${selectedField.toLocaleLowerCase}/model.json`
+          `/model/${selectedField.toLocaleLowerCase()}/model.json`
         );
         setModel(loadedModel);
         console.log("Model loaded successfully.");
