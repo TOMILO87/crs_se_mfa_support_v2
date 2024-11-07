@@ -2,7 +2,7 @@ import Head from "next/head";
 import { Inter } from "next/font/google";
 //import styles from "@/styles/home.module.css";
 //<main className={`${styles.main} ${inter.className}`}>
-import ShowOECDData from "@/components/show-oecd-data";
+//import ShowOECDData from "@/components/present-data/show-oecd-data";
 import Link from "next/link";
 
 const inter = Inter({ subsets: ["latin"] });
