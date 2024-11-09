@@ -9,7 +9,7 @@ import { AiRecommendationsContextProvider } from "@/context/ai-recommendations-c
 import styles from "@/styles/admin.module.css";
 import ModelTrainer from "@/components/ai-recommendations/model-trainer";
 import SplitData from "@/components/ai-recommendations/split-data";
-import ModelTrainerV2 from "@/components/ai-recommendations-v2/model-trainer";
+//import ModelTrainerV2 from "@/OLD/ai-recommendations-v2/model-trainer";
 
 export default function AiTrainier() {
   return (
