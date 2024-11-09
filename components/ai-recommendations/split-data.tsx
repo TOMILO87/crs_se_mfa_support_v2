@@ -6,8 +6,8 @@ const SplitData: React.FC = () => {
   const { selectedFile } = useSelectedFileContext();
   const { setTrainingData, setTestData, setKeywordData } =
     useAiRecommendationsContext();
-  const [trainingProportion, setTrainingProportion] = useState(0.6);
-  const [testProportion, setTestProportion] = useState(0.2);
+  const [trainingProportion, setTrainingProportion] = useState(0.75);
+  const [testProportion, setTestProportion] = useState(0.05);
   const [keywordsProportion, setKeywordsProportion] = useState(0.2);
 
   // Helper function to shuffle an array

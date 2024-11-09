@@ -9,8 +9,10 @@ import { AiRecommendationsContextProvider } from "@/context/ai-recommendations-c
 import styles from "@/styles/admin.module.css";
 import ModelTrainer from "@/components/ai-recommendations/model-trainer";
 import SplitData from "@/components/ai-recommendations/split-data";
+import ModelTrainerV2 from "@/components/ai-recommendations-v2/model-trainer";
 
 export default function AiTrainier() {
+  //<ModelTrainerV2 />
   return (
     <main className={styles.admin}>
       <SelectedFileContextProvider>
@@ -25,7 +27,7 @@ export default function AiTrainier() {
           <IdentifyKeywords />
           <h2>Train model</h2>
           <ModelTrainer />
-          //Rest bottom
+          //////////
         </AiRecommendationsContextProvider>
       </SelectedFileContextProvider>
     </main>

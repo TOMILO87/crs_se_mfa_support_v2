@@ -6,9 +6,9 @@ import { splitDataByMarker } from "@/utils/misc";
 import Prediction from "./prediction";
 
 export default function ModelTrainer() {
-  const MAX_CRS_ROWS_TRAIN = 5000;
-  const MAX_CRS_ROWS_TEST = 5000;
-  const NUM_EPOCHS = 3;
+  const MAX_CRS_ROWS_TRAIN = Number.MAX_SAFE_INTEGER;
+  const MAX_CRS_ROWS_TEST = Number.MAX_SAFE_INTEGER;
+  const NUM_EPOCHS = 10;
 
   const { keywords, trainingData, testData, selectedField } =
     useAiRecommendationsContext();

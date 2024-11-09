@@ -7,7 +7,7 @@ const IdentifyKeywords: React.FC = () => {
   const MAX_KEYWORDS = 800;
   const BIG_SAMPLE_SIZE = 40;
   const SMALL_SAMPLE_SIZE = 3;
-  const TIME_LIMIT_MS = (60000 / 60) * 3; // in milliseconds
+  const TIME_LIMIT_MS = (60000 / 60) * 20; // in milliseconds
 
   const { selectedField, setKeywords, keywordData } =
     useAiRecommendationsContext();
