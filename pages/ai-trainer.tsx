@@ -12,7 +12,6 @@ import SplitData from "@/components/ai-recommendations/split-data";
 import ModelTrainerV2 from "@/components/ai-recommendations-v2/model-trainer";
 
 export default function AiTrainier() {
-  //<ModelTrainerV2 />
   return (
     <main className={styles.admin}>
       <SelectedFileContextProvider>
@@ -27,7 +26,6 @@ export default function AiTrainier() {
           <IdentifyKeywords />
           <h2>Train model</h2>
           <ModelTrainer />
-          //////////
         </AiRecommendationsContextProvider>
       </SelectedFileContextProvider>
     </main>

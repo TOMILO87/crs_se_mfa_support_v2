@@ -10,8 +10,6 @@ const LoadFile: React.FC = () => {
     }
   };
 
-  // Read data
-
   return (
     <div>
       <label htmlFor="fileInput">
