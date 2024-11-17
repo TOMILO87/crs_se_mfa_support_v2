@@ -2,7 +2,6 @@
 // </AiRecommendationsContextProvider>
 
 import FieldSelector from "@/components/ai-recommendations/field-selector";
-import IdentifyKeywords from "@/OLD/js extract keywords/identify-keywords";
 import LoadFile from "@/components/utils/load-file";
 import { SelectedFileContextProvider } from "@/context/selected-file-context";
 import { AiRecommendationsContextProvider } from "@/context/ai-recommendations-context";
