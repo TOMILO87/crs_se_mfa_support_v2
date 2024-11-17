@@ -4,13 +4,16 @@ export default async function handler(req, res) {
     try {
       const { description } = req.body;
 
-      const response = await fetch("http://localhost:5001/api/predict", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ description }),
-      });
+      const response = await fetch(
+        "https://crs-se-mfa-support-v2.onrender.com/api/predict",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ description }),
+        }
+      );
 
       if (response.ok) {
         const data = await response.json();
