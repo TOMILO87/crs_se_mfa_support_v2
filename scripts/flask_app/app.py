@@ -27,8 +27,8 @@ def download_file(url, local_path):
         print(f"Error downloading {url} (Status code: {response.status_code})")
 
 # Paths to the model and tokenizer files
-MODEL_URL = "https://raw.githubusercontent.com/TOMILO87/crs_se_mfa_support_v2/main/models/Gender_model.keras"
-TOKENIZER_URL = "https://raw.githubusercontent.com/TOMILO87/crs_se_mfa_support_v2/main/models/Gender_tokenizer.pickle"
+MODEL_URL = "https://github.com/TOMILO87/crs_se_mfa_support_v2/blob/eb975ae57e3204f9a87a3be92e4afc10033a4001/models/Gender_model.keras"
+TOKENIZER_URL = "https://github.com/TOMILO87/crs_se_mfa_support_v2/blob/eb975ae57e3204f9a87a3be92e4afc10033a4001/models/Gender_tokenizer.pickle"
 
 MODEL_PATH = './models/Gender_model.keras'  # Will be saved in the models folder (ensure this folder exists)
 TOKENIZER_PATH = './models/Gender_tokenizer.pickle'
