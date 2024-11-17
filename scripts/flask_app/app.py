@@ -1,7 +1,6 @@
 from flask import Flask, request, render_template, jsonify
 from flask_cors import CORS
 import pickle
-import requests
 import tensorflow as tf
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 import os
@@ -13,32 +12,9 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 app = Flask(__name__)
 CORS(app)
 
-## During development trained models are downloaded from github ##
-
-# Function to download files
-def download_file(url, local_path):
-    """Downloads a file from a URL and saves it to a local path."""
-    response = requests.get(url)
-    if response.status_code == 200:
-        with open(local_path, 'wb') as f:
-            f.write(response.content)
-        print(f"Downloaded {url} to {local_path}")
-    else:
-        print(f"Error downloading {url} (Status code: {response.status_code})")
-
 # Paths to the model and tokenizer files
-MODEL_URL = "https://github.com/TOMILO87/crs_se_mfa_support_v2/blob/eb975ae57e3204f9a87a3be92e4afc10033a4001/models/Gender_model.keras"
-TOKENIZER_URL = "https://github.com/TOMILO87/crs_se_mfa_support_v2/blob/eb975ae57e3204f9a87a3be92e4afc10033a4001/models/Gender_tokenizer.pickle"
-
-MODEL_PATH = './models/Gender_model.keras'  # Will be saved in the models folder (ensure this folder exists)
-TOKENIZER_PATH = './models/Gender_tokenizer.pickle'
-
-# Create the models directory if it doesn't exist
-os.makedirs('./models', exist_ok=True)
-
-# Download files to the Flask app
-download_file(MODEL_URL, MODEL_PATH)
-download_file(TOKENIZER_URL, TOKENIZER_PATH)
+MODEL_PATH = 'https://crs-se-mfa-support-v2.vercel.app/models/Gender_model.keras'
+TOKENIZER_PATH = 'https://crs-se-mfa-support-v2.vercel.app/models/Gender_tokenizer.pickle'
 
 # Load model and tokenizer once when the app starts
 model = tf.keras.models.load_model(MODEL_PATH)
