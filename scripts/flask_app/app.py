@@ -1,6 +1,7 @@
 from flask import Flask, request, render_template, jsonify
 from flask_cors import CORS
 import pickle
+import requests
 import tensorflow as tf
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 import os
