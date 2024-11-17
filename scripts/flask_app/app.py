@@ -3,16 +3,18 @@ from flask_cors import CORS
 import pickle
 import tensorflow as tf
 from tensorflow.keras.preprocessing.sequence import pad_sequences
+import os
+
+# Tell TensorFlow to ignore any available GPUs and only use the CPU
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
 # Initialize Flask app
 app = Flask(__name__)
 CORS(app)
 
-
-# Might need to upload them directly to render
 # Paths to the model and tokenizer files
-MODEL_PATH = '../../public/models/Gender_model.keras'
-TOKENIZER_PATH = '../../public/models/Gender_tokenizer.pickle'
+MODEL_PATH = './models/Gender_model.keras'
+TOKENIZER_PATH = './models/Gender_tokenizer.pickle'
 
 # Load model and tokenizer once when the app starts
 model = tf.keras.models.load_model(MODEL_PATH)
