@@ -12,9 +12,32 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 app = Flask(__name__)
 CORS(app)
 
+## During development trained models are downloaded from github ##
+
+# Function to download files
+def download_file(url, local_path):
+    """Downloads a file from a URL and saves it to a local path."""
+    response = requests.get(url)
+    if response.status_code == 200:
+        with open(local_path, 'wb') as f:
+            f.write(response.content)
+        print(f"Downloaded {url} to {local_path}")
+    else:
+        print(f"Error downloading {url} (Status code: {response.status_code})")
+
 # Paths to the model and tokenizer files
-MODEL_PATH = './models/Gender_model.keras'
+MODEL_URL = "https://raw.githubusercontent.com/TOMILO87/crs_se_mfa_support_v2/main/models/Gender_model.keras"
+TOKENIZER_URL = "https://raw.githubusercontent.com/TOMILO87/crs_se_mfa_support_v2/main/models/Gender_tokenizer.pickle"
+
+MODEL_PATH = './models/Gender_model.keras'  # Will be saved in the models folder (ensure this folder exists)
 TOKENIZER_PATH = './models/Gender_tokenizer.pickle'
+
+# Create the models directory if it doesn't exist
+os.makedirs('./models', exist_ok=True)
+
+# Download files to the Flask app
+download_file(MODEL_URL, MODEL_PATH)
+download_file(TOKENIZER_URL, TOKENIZER_PATH)
 
 # Load model and tokenizer once when the app starts
 model = tf.keras.models.load_model(MODEL_PATH)
