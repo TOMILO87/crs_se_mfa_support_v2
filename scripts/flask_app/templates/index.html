@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Text Prediction</title>
+  </head>
+  <body>
+    <h1>Predict Target Class from Description</h1>
+    <form method="POST">
+      <label for="description">Enter Description:</label><br />
+      <textarea
+        id="description"
+        name="description"
+        rows="5"
+        cols="50"
+        placeholder="Type your description here..."
+        required
+      >
+{{ description }}</textarea
+      ><br /><br />
+      <button type="submit">Predict</button>
+    </form>
+
+    {% if prediction is not none %}
+    <h2>Prediction Result: {{ prediction }}</h2>
+    {% endif %} {% if probabilities %}
+    <h2>Probabilities: {{ probabilities }}</h2>
+    {% endif %}
+  </body>
+</html>

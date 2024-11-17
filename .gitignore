@@ -35,7 +35,12 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts/data
 
+# python
+venv/
+scripts/flask_app/test-env
+
 # pre-trained models and training data etc.
-/public/models/bert-base-multilingual-cased
 /data
+
+# Files not used
 /OLD
