@@ -41,6 +41,7 @@ scripts/flask_app/test-env
 
 # pre-trained models and training data etc.
 /data
+/models
 
 # Files not used
 /OLD

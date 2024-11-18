@@ -12,9 +12,9 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 app = Flask(__name__)
 CORS(app)
 
-# Paths to the model and tokenizer files
-MODEL_PATH = 'https://crs-se-mfa-support-v2.vercel.app/models/Gender_model.keras'
-TOKENIZER_PATH = 'https://crs-se-mfa-support-v2.vercel.app/models/Gender_tokenizer.pickle'
+# Paths to the model and tokenizer files on the persistent disk
+MODEL_PATH = '/var/models/Gender_model.keras'
+TOKENIZER_PATH = '/var/models/Gender_tokenizer.pickle'
 
 # Load model and tokenizer once when the app starts
 model = tf.keras.models.load_model(MODEL_PATH)
