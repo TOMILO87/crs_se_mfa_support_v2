@@ -3,8 +3,8 @@ import tensorflow as tf
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 
 # Paths to the model and tokenizer files
-model_path = '../public/models/Gender_model.keras'
-tokenizer_path = '../public/models/Gender_tokenizer.pickle'
+model_path = '../models/Gender_model.keras'
+tokenizer_path = '../models/Gender_tokenizer.pickle'
 
 def load_model_and_tokenizer(model_path, tokenizer_path):
     # Load the trained model

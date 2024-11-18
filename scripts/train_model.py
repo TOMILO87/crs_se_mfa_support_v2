@@ -63,11 +63,11 @@ def train_model(target_column):
     model.fit(X_train, y_train, epochs=5, batch_size=32, validation_data=(X_test, y_test), callbacks=[early_stopping])
 
     # Save the trained model and tokenizer
-    model.save(f'../public/models/{target_column}_model.keras')
-    with open(f'../public/models/{target_column}_tokenizer.pickle', 'wb') as f:
+    model.save(f'../models/{target_column}_model.keras')
+    with open(f'../models/{target_column}_tokenizer.pickle', 'wb') as f:
         pickle.dump(tokenizer, f)
 
 # Main entry point
 if __name__ == "__main__":
-    target_column = 'Gender'  # Change this value to 'Environment' or 'Category' as needed
+    target_column = 'Category'  # Change this value to 'Environment' or 'Category' as needed
     train_model(target_column)
