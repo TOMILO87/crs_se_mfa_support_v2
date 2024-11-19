@@ -3,6 +3,7 @@ import tensorflow as tf
 from tensorflow import keras
 import pandas as pd
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder
 from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.callbacks import EarlyStopping
@@ -12,6 +13,22 @@ from tensorflow.keras.regularizers import l2
 data = pd.read_csv('../data/CRS_combined_data.csv')
 
 def preprocess_data(target_column, tokenizer=None):
+    """
+    Preprocesses data for training.
+    - Tokenizes and pads text in the 'LongDescription' column.
+    - Encodes the target column using LabelEncoder.
+
+    Args:
+        target_column (str): The name of the target column to predict.
+        tokenizer (Tokenizer, optional): Pretrained tokenizer (if available).
+
+    Returns:
+        X_pad: Padded sequences for input data.
+        y: Encoded labels for the target column.
+        tokenizer: Trained tokenizer.
+        label_encoder: Trained LabelEncoder for decoding labels.
+        data_filtered: Filtered DataFrame used for training.
+    """
     # Drop rows with missing values in 'LongDescription' or the target column
     data_filtered = data.dropna(subset=['LongDescription', target_column])
     
@@ -26,19 +43,27 @@ def preprocess_data(target_column, tokenizer=None):
     X_seq = tokenizer.texts_to_sequences(X)
     X_pad = pad_sequences(X_seq, padding='post', maxlen=200)  # Adjust maxlen based on your data
 
-    # Prepare the target variable
-    y = data_filtered[target_column].values
+    # Encode the target variable
+    label_encoder = LabelEncoder()
+    y = label_encoder.fit_transform(data_filtered[target_column].values)
 
-    return X_pad, y, tokenizer, data_filtered
+    return X_pad, y, tokenizer, label_encoder, data_filtered
 
 def train_model(target_column):
+    """
+    Trains a TensorFlow model to predict the given target column.
+    - Saves the trained model, tokenizer, and label encoder for future use.
+
+    Args:
+        target_column (str): The name of the target column to predict.
+    """
     # Preprocess data and optionally create a tokenizer
-    X, y, tokenizer, data_filtered = preprocess_data(target_column)
+    X, y, tokenizer, label_encoder, data_filtered = preprocess_data(target_column)
 
     # Get the number of unique classes in the target column
-    num_classes = len(data_filtered[target_column].dropna().unique())
+    num_classes = len(label_encoder.classes_)
 
-    # Split data into train and test
+    # Split data into train and test sets
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 
     # Define the model
@@ -66,8 +91,12 @@ def train_model(target_column):
     model.save(f'../models/{target_column}_model.keras')
     with open(f'../models/{target_column}_tokenizer.pickle', 'wb') as f:
         pickle.dump(tokenizer, f)
+    with open(f'../models/{target_column}_label_encoder.pickle', 'wb') as f:
+        pickle.dump(label_encoder, f)
+
+    print(f"Model and tokenizer for {target_column} saved successfully!")
 
 # Main entry point
 if __name__ == "__main__":
-    target_column = 'Category'  # Change this value to 'Environment' or 'Category' as needed
+    target_column = 'Category'  # Change this to 'Environment', 'Gender', or other target columns as needed
     train_model(target_column)

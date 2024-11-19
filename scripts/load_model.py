@@ -1,6 +1,10 @@
+import os
 import pickle
 import tensorflow as tf
 from tensorflow.keras.preprocessing.sequence import pad_sequences
+
+# Tell TensorFlow to ignore any available GPUs and only use the CPU
+#os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
 # Paths to the model and tokenizer files
 model_path = '../models/Gender_model.keras'

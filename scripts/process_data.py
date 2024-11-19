@@ -12,7 +12,7 @@ OUTPUT_FILE = "../data/CRS_combined_data.csv"
 COLUMN_NAMES = ["Year", "Gender", "Environment", "USD_Disbursement", "PurposeCode", "LongDescription", "ShortDescription", "ChannelName", "ChannelReportedName"]
 
 # List of years to process
-YEARS = ["2021", "2022"]
+YEARS = ["2018", "2019", "2020", "2021", "2022"]
 
 # Function to map PurposeCode to specified categories
 def map_purpose_code(code):

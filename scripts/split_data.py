@@ -9,9 +9,9 @@ output_test = "../data/test_data.csv"
 output_identify_keywords = "../data/identify_keywords_data.csv"
 
 # Proportions for splitting
-train_proportion = 0.7   # 70% for training
-test_proportion = 0.1    # 10% for testing
-identify_keywords_proportion = 0.2  # 20% for keyword identification
+train_proportion = 0.85
+test_proportion = 0.15
+identify_keywords_proportion = 0
 
 # Read the combined data
 df = pd.read_csv(input_file, dtype=str)  # Load all data as strings
