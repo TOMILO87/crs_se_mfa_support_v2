@@ -33,6 +33,7 @@ model = None
 tokenizer = None
 
 def load_model_and_tokenizer():
+    print("...Model loaded")
     global model, tokenizer
     """Load the model and tokenizer once when the app starts."""
     try:
@@ -61,6 +62,9 @@ def index():
     prediction_result = None
     prediction_probabilities = None
     description = ""
+
+    print("cat")
+    print(model)
 
     if request.method == 'POST':
         description = request.form['description']
