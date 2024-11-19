@@ -8,20 +8,17 @@ import os
 # Set TensorFlow to use only CPU and limit memory usage
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"  # Disable GPU if not needed
 
-# Limit TensorFlow memory usage to avoid out of memory errors
+# Limit TensorFlow memory usage (only for GPU, skip for CPU)
 physical_devices = tf.config.experimental.list_physical_devices('GPU')
 if physical_devices:
     try:
         # Limit TensorFlow to a fraction of GPU memory if GPU is available
         tf.config.experimental.set_memory_growth(physical_devices[0], True)
+        print("GPU memory growth set successfully.")
     except:
         pass  # Ignore if no GPU is available
 else:
-    # Limit memory usage for CPU to 400 MB (or adjust to your available memory)
-    tf.config.set_logical_device_configuration(
-        tf.config.list_physical_devices('CPU')[0], 
-        [tf.config.LogicalDeviceConfiguration(memory_limit=400)]  # Adjust as needed
-    )
+    print("No GPU found, proceeding without memory limits.")
 
 # Initialize Flask app
 app = Flask(__name__)
