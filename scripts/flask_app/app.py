@@ -1,24 +1,12 @@
-from flask import Flask, request, render_template, jsonify
-from flask_cors import CORS
+import os
 import pickle
 import tensorflow as tf
+from flask import Flask, request, render_template, jsonify
+from flask_cors import CORS
 from tensorflow.keras.preprocessing.sequence import pad_sequences
-import os
 
 # Set TensorFlow to use only CPU and limit memory usage
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"  # Disable GPU if not needed
-
-# Limit TensorFlow memory usage (only for GPU, skip for CPU)
-physical_devices = tf.config.experimental.list_physical_devices('GPU')
-if physical_devices:
-    try:
-        # Limit TensorFlow to a fraction of GPU memory if GPU is available
-        tf.config.experimental.set_memory_growth(physical_devices[0], True)
-        print("GPU memory growth set successfully.")
-    except:
-        pass  # Ignore if no GPU is available
-else:
-    print("No GPU found, proceeding without memory limits.")
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -28,22 +16,25 @@ CORS(app)
 MODEL_PATH = '/var/models/Gender_model.keras'
 TOKENIZER_PATH = '/var/models/Gender_tokenizer.pickle'
 
-# Initialize placeholders for the model and tokenizer
+# Global variables for model and tokenizer
 model = None
 tokenizer = None
 
-# Try to load the model and tokenizer, handle missing files gracefully
-try:
-    if os.path.exists(MODEL_PATH) and os.path.exists(TOKENIZER_PATH):
-        model = tf.keras.models.load_model(MODEL_PATH)
-        with open(TOKENIZER_PATH, 'rb') as f:
-            tokenizer = pickle.load(f)
-        print("Model and tokenizer loaded successfully.")
-    else:
-        print("Model or tokenizer not found. App will start without them.")
-except Exception as e:
-    print(f"Error loading model or tokenizer: {e}")
+# Load the model and tokenizer once when the app starts
+def load_model():
+    global model, tokenizer
+    try:
+        if os.path.exists(MODEL_PATH) and os.path.exists(TOKENIZER_PATH):
+            model = tf.keras.models.load_model(MODEL_PATH)
+            with open(TOKENIZER_PATH, 'rb') as f:
+                tokenizer = pickle.load(f)
+            print("Model and tokenizer loaded successfully.")
+        else:
+            print("Model or tokenizer not found.")
+    except Exception as e:
+        print(f"Error loading model or tokenizer: {e}")
 
+# Preprocess input description
 def preprocess_input(description, tokenizer, maxlen=200):
     """Tokenize and pad the input description."""
     seq = tokenizer.texts_to_sequences([description])
@@ -104,4 +95,6 @@ def health():
     return jsonify({"status": "ok"}), 200
 
 if __name__ == "__main__":
+    # Load model and tokenizer before starting the app
+    load_model()
     app.run(host="0.0.0.0", port=5001, debug=True)  # Run on port 5001
