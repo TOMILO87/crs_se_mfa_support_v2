@@ -52,6 +52,11 @@ def test():
 
 @app.route('/api/predict', methods=["POST"])
 def predict():
+    
+    print("cat")
+    description = request.form["description"]
+    print(f"Description: {description}")
+    return 
     try:
         # Load model
         model = tf.keras.models.load_model(MODEL_PATH)
