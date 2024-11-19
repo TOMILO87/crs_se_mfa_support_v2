@@ -54,6 +54,7 @@ def test():
 def predict():
     
     print("cat")
+    print(request.form)
     description = request.form["description"]
     print(f"Description: {description}")
     return 
