@@ -72,8 +72,10 @@ def index():
         if description.strip() and model and tokenizer:
             input_data = preprocess_input(description, tokenizer)
             prediction = model.predict(input_data)
+            print(prediction)
             predicted_class = prediction.argmax(axis=1)[0]
             prediction_probabilities = prediction.tolist()
+            print(prediction_probabilities)
             prediction_result = predicted_class
         else:
             prediction_result = "Model not available or description missing."
