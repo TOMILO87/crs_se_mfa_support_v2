@@ -49,24 +49,22 @@ def test():
         )
     except Exception as e:
         return f"Error: {e}"
-    
-@app.route('/predict')
-def test2():
+
+@app.route('/api/predict', methods=["POST"])
+def predict():
     try:
         # Load model
         model = tf.keras.models.load_model(MODEL_PATH)
         print("Model loaded successfully.")
-
-        description = request.form["description"]
-        print(description)
 
         # Load tokenizer
         with open(TOKENIZER_PATH, 'rb') as f:
             tokenizer = pickle.load(f)
         print("Tokenizer loaded successfully.")
 
-        # Hardcoded description
-        description = "Community network contribution in the field of education in Tanzania."
+        # Get description from the form
+        description = request.form["description"]
+        print(f"Description: {description}")
 
         # Preprocess description
         input_data = preprocess_input(description, tokenizer)
@@ -79,7 +77,6 @@ def test2():
 
         # Return results
         return (
-            f"Model and tokenizer loaded successfully!<br>"
             f"Description: {description}<br>"
             f"Predicted Class: {predicted_class}<br>"
             f"Prediction Probabilities: {prediction.tolist()}"
