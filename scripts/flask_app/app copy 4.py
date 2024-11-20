@@ -16,16 +16,6 @@ def preprocess_input(description, tokenizer, maxlen=200):
     padded_seq = pad_sequences(seq, padding='post', maxlen=maxlen)
     return padded_seq
 
-
-# Load model
-model = tf.keras.models.load_model(MODEL_PATH)
-print("Model loaded successfully.")
-
-# Load tokenizer
-with open(TOKENIZER_PATH, 'rb') as f:
-    tokenizer = pickle.load(f)
-print("Tokenizer loaded successfully.")
-
 @app.route('/')
 def test():
     try:
