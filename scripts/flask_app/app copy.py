@@ -86,11 +86,11 @@ def predict():
         print(f"Prediction Probabilities: {prediction.tolist()}")
 
         # Return results
-        return (
-            f"Description: {description}<br>"
-            f"Predicted Class: {predicted_class}<br>"
-            f"Prediction Probabilities: {prediction.tolist()}"
-        )
+        return {
+            "description": description,
+            "predicted_class": int(predicted_class),  # Ensure JSON-serializable
+            "prediction_probabilities": prediction.tolist(),  # Convert to list for JSON
+        }
     except Exception as e:
         return f"Error: {e}"
 
