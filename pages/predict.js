@@ -17,10 +17,11 @@ export default function Predict() {
         body: JSON.stringify({ description }),
       });
 
-      console.log(body, description);
+      console.log(response);
 
       if (response.ok) {
         const data = await response.json();
+        console.log(data);
         setPredictedClass(data.predicted_class); // Update key to match Flask response
         setProbabilities(data.prediction_probabilities); // Update key to match Flask response
       } else {
