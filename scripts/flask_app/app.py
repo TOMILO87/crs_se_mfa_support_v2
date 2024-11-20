@@ -54,14 +54,15 @@ def test():
 def predict():
     
     print("cat")
-    print(request.form)
-    description = request.form["description"]
-    print(f"Description: {description}")
+    #print(request.form)
+    # description = request.form["description"]
+    #print(f"Description: {description}")
 
     print("Request received!")
     # Parse JSON payload
     data = request.get_json()
     print(data)
+    print(request)
     return 
     try:
         # Load model
