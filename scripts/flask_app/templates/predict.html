@@ -61,7 +61,7 @@
   </head>
   <body>
     <div class="container">
-      <h1>Planit 🤖 Assistent</h1>
+      <h1>Planit 🤖 assistent</h1>
       <form action="/predict" method="POST">
         <textarea
           name="description"
@@ -77,9 +77,9 @@
       <div class="prediction">
         <h3>Resultat:</h3>
         {% for model, result in predictions.items() %}
-        <h4>{{ model.capitalize() }} Förslag:</h4>
-        <p><strong>Predicted Class:</strong> {{ result.label }}</p>
-        <h4>Prediction Probabilities:</h4>
+        <h4><u>Fält: {{ model.capitalize() }}:</u></h4>
+        <p><strong>Förslag:</strong> {{ result.label }}</p>
+        <h4>Förslag sannolikhet:</h4>
         <ul class="probabilities">
           {% for label, prob in result.prediction_probabilities %}
           <li>{{ label }}: {{ (prob * 100) | round(2) }}%</li>

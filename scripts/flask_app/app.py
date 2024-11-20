@@ -13,22 +13,22 @@ CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 # Paths to the model and tokenizer files (Add more models here as needed)
 MODEL_PATHS = {
-    "gender": "/var/models/Gender_model.keras",
     "category": "/var/models/Category_model.keras",
+    "gender": "/var/models/Gender_model.keras",
     "environment": "/var/models/Environment_model.keras",
     #"biodiversity": "/var/models/Biodiversity_model.keras"  # Example of adding a new model
 }
 
 TOKENIZER_PATHS = {
-    "gender": "/var/models/Gender_tokenizer.pickle",
     "category": "/var/models/Category_tokenizer.pickle",
+    "gender": "/var/models/Gender_tokenizer.pickle",
     "environment": "/var/models/Environment_tokenizer.pickle",
     #"biodiversity": "/var/models/Biodiversity_tokenizer.pickle"  # Corresponding tokenizer
 }
 
 LABEL_ENCODER_PATHS = {
-    "gender": "/var/models/Gender_label_encoder.pickle",
     "category": "/var/models/Category_label_encoder.pickle",
+    "gender": "/var/models/Gender_label_encoder.pickle",
     "environment": "/var/models/Environment_label_encoder.pickle",
     #"biodiversity": "/var/models/Biodiversity_label_encoder.pickle"  # For new model
 }
@@ -74,21 +74,26 @@ def make_prediction(model, tokenizer, label_encoder, description):
     """Make prediction for a given model and tokenizer."""
     input_data = preprocess_input(description, tokenizer)
     prediction = model.predict(input_data)
-    
-    # Sort probabilities and labels in descending order of probability
-    sorted_indices = np.argsort(prediction[0])[::-1]
-    sorted_probs = prediction[0][sorted_indices]
-    sorted_labels = label_encoder.classes_[sorted_indices]
-    
-    # Limit to top 3 results
-    top_probs = sorted_probs[:3]
-    top_labels = sorted_labels[:3]
+    pred_class = prediction.argmax(axis=1)[0]
+    pred_label = label_encoder.classes_[pred_class]
+
+    # Convert float labels to integers if possible
+    if isinstance(pred_label, float) and pred_label.is_integer():
+        pred_label = int(pred_label)
+
+    # Map probabilities to their labels
+    label_probabilities = [
+        (label if not (isinstance(label, float) and label.is_integer()) else int(label), prob)
+        for label, prob in zip(label_encoder.classes_, prediction[0])
+    ]
+    label_probabilities = sorted(label_probabilities, key=lambda x: x[1], reverse=True)
 
     return {
-        "predicted_class": int(sorted_indices[0]),  # The highest probability index
-        "label": sorted_labels[0],  # The corresponding class label
-        "prediction_probabilities": list(zip(top_labels, top_probs))  # Pair of label and probability
+        "predicted_class": int(pred_class),  # Convert to int for JSON serialization
+        "prediction_probabilities": label_probabilities,  # Pair labels with probabilities
+        "label": pred_label
     }
+
 
 @app.route("/api/predict", methods=["POST"])
 def predict_api():
