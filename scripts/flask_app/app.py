@@ -4,6 +4,7 @@ import tensorflow as tf
 import pickle
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 import os
+import numpy as np
 
 app = Flask(__name__)
 
@@ -11,31 +12,59 @@ app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 # Paths to the model and tokenizer files
-MODEL_PATH = '/var/models/Gender_model.keras'
-TOKENIZER_PATH = '/var/models/Gender_tokenizer.pickle'
+MODEL_PATHS = {
+    "gender": "/var/models/Gender_model.keras",
+    "category": "/var/models/Category_model.keras",
+    "environment": "/var/models/Environment_model.keras"
+}
 
-# Preprocess function
+TOKENIZER_PATHS = {
+    "gender": "/var/models/Gender_tokenizer.pickle",
+    "category": "/var/models/Category_tokenizer.pickle",
+    "environment": "/var/models/Environment_tokenizer.pickle"
+}
+
+LABEL_ENCODER_PATHS = {
+    "gender": "/var/models/Gender_label_encoder.pickle",
+    "category": "/var/models/Category_label_encoder.pickle",
+    "environment": "/var/models/Environment_label_encoder.pickle"
+}
+
+# Preprocess function for text descriptions
 def preprocess_input(description, tokenizer, maxlen=200):
     """Tokenize and pad the input description."""
     seq = tokenizer.texts_to_sequences([description])
     padded_seq = pad_sequences(seq, padding='post', maxlen=maxlen)
     return padded_seq
 
-# Utility function to load the model and tokenizer
-def get_model_and_tokenizer():
-    """Load and cache the model and tokenizer in Flask's application context."""
-    if "model" not in g:
-        g.model = tf.keras.models.load_model(MODEL_PATH)
-    if "tokenizer" not in g:
-        with open(TOKENIZER_PATH, 'rb') as f:
-            g.tokenizer = pickle.load(f)
-    return g.model, g.tokenizer
+# Utility function to load models, tokenizers, and label encoders
+def get_models_and_tokenizers():
+    """Load and cache the models, tokenizers, and label encoders in Flask's application context."""
+    if "models" not in g:
+        g.models = {}
+        for model_key, model_path in MODEL_PATHS.items():
+            g.models[model_key] = tf.keras.models.load_model(model_path)
+
+    if "tokenizers" not in g:
+        g.tokenizers = {}
+        for key, path in TOKENIZER_PATHS.items():
+            with open(path, 'rb') as f:
+                g.tokenizers[key] = pickle.load(f)
+
+    if "label_encoders" not in g:
+        g.label_encoders = {}
+        for key, path in LABEL_ENCODER_PATHS.items():
+            with open(path, 'rb') as f:
+                g.label_encoders[key] = pickle.load(f)
+    
+    return g.models, g.tokenizers, g.label_encoders
 
 @app.teardown_appcontext
 def cleanup(exception=None):
     """Clean up resources on application context teardown."""
-    g.pop("model", None)
-    g.pop("tokenizer", None)
+    g.pop("models", None)
+    g.pop("tokenizers", None)
+    g.pop("label_encoders", None)
 
 @app.route("/api/predict", methods=["POST"])
 def predict_api():
@@ -47,21 +76,47 @@ def predict_api():
         if not description:
             return jsonify({"error": "Description is required"}), 400
 
-        # Load model and tokenizer
-        model, tokenizer = get_model_and_tokenizer()
+        # Load models, tokenizers, and label encoders
+        models, tokenizers, label_encoders = get_models_and_tokenizers()
 
-        # Preprocess the input description
-        input_data = preprocess_input(description, tokenizer)
+        predictions = {}
 
-        # Make prediction
-        prediction = model.predict(input_data)
-        predicted_class = prediction.argmax(axis=1)[0]
-        prediction_probabilities = prediction.tolist()[0]
+        # Predict with Gender model
+        gender_model = models["gender"]
+        gender_tokenizer = tokenizers["gender"]
+        input_data = preprocess_input(description, gender_tokenizer)
+        gender_prediction = gender_model.predict(input_data)
+        gender_pred_class = gender_prediction.argmax(axis=1)[0]
+        predictions["gender"] = {
+            "predicted_class": gender_pred_class,
+            "prediction_probabilities": gender_prediction.tolist()[0]
+        }
 
-        return jsonify({
-            "predicted_class": predicted_class,
-            "prediction_probabilities": prediction_probabilities
-        })
+        # Predict with Category model
+        category_model = models["category"]
+        category_tokenizer = tokenizers["category"]
+        input_data = preprocess_input(description, category_tokenizer)
+        category_prediction = category_model.predict(input_data)
+        category_pred_class = category_prediction.argmax(axis=1)[0]
+        predictions["category"] = {
+            "predicted_class": category_pred_class,
+            "prediction_probabilities": category_prediction.tolist()[0],
+            "category_label": label_encoders["category"].classes_[category_pred_class]
+        }
+
+        # Predict with Environment model
+        environment_model = models["environment"]
+        environment_tokenizer = tokenizers["environment"]
+        input_data = preprocess_input(description, environment_tokenizer)
+        environment_prediction = environment_model.predict(input_data)
+        environment_pred_class = environment_prediction.argmax(axis=1)[0]
+        predictions["environment"] = {
+            "predicted_class": environment_pred_class,
+            "prediction_probabilities": environment_prediction.tolist()[0],
+            "environment_label": label_encoders["environment"].classes_[environment_pred_class]
+        }
+
+        return jsonify(predictions)
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -75,18 +130,47 @@ def predict_page():
         if not description:
             return render_template("predict.html", error="Description is required")
 
-        # Load model and tokenizer
-        model, tokenizer = get_model_and_tokenizer()
+        # Load models, tokenizers, and label encoders
+        models, tokenizers, label_encoders = get_models_and_tokenizers()
 
-        # Preprocess the input description
-        input_data = preprocess_input(description, tokenizer)
+        predictions = {}
 
-        # Make prediction
-        prediction = model.predict(input_data)
-        predicted_class = prediction.argmax(axis=1)[0]
-        prediction_probabilities = prediction.tolist()[0]
+        # Predict with Gender model
+        gender_model = models["gender"]
+        gender_tokenizer = tokenizers["gender"]
+        input_data = preprocess_input(description, gender_tokenizer)
+        gender_prediction = gender_model.predict(input_data)
+        gender_pred_class = gender_prediction.argmax(axis=1)[0]
+        predictions["gender"] = {
+            "predicted_class": gender_pred_class,
+            "prediction_probabilities": gender_prediction.tolist()[0]
+        }
 
-        return render_template("predict.html", predicted_class=predicted_class, prediction_probabilities=prediction_probabilities)
+        # Predict with Category model
+        category_model = models["category"]
+        category_tokenizer = tokenizers["category"]
+        input_data = preprocess_input(description, category_tokenizer)
+        category_prediction = category_model.predict(input_data)
+        category_pred_class = category_prediction.argmax(axis=1)[0]
+        predictions["category"] = {
+            "predicted_class": category_pred_class,
+            "prediction_probabilities": category_prediction.tolist()[0],
+            "category_label": label_encoders["category"].classes_[category_pred_class]
+        }
+
+        # Predict with Environment model
+        environment_model = models["environment"]
+        environment_tokenizer = tokenizers["environment"]
+        input_data = preprocess_input(description, environment_tokenizer)
+        environment_prediction = environment_model.predict(input_data)
+        environment_pred_class = environment_prediction.argmax(axis=1)[0]
+        predictions["environment"] = {
+            "predicted_class": environment_pred_class,
+            "prediction_probabilities": environment_prediction.tolist()[0],
+            "environment_label": label_encoders["environment"].classes_[environment_pred_class]
+        }
+
+        return render_template("predict.html", predictions=predictions)
 
     return render_template("predict.html")
 
@@ -96,11 +180,11 @@ def home():
     return "Flask app is running!"
 
 if __name__ == "__main__":
-    if not os.path.exists(MODEL_PATH):
-        print(f"Error: Model file not found at {MODEL_PATH}")
+    if not all(os.path.exists(path) for path in MODEL_PATHS.values()):
+        print(f"Error: One or more model files are missing.")
         exit(1)
-    if not os.path.exists(TOKENIZER_PATH):
-        print(f"Error: Tokenizer file not found at {TOKENIZER_PATH}")
+    if not all(os.path.exists(path) for path in TOKENIZER_PATHS.values()):
+        print(f"Error: One or more tokenizer files are missing.")
         exit(1)
 
     app.run(debug=True, host="0.0.0.0")
