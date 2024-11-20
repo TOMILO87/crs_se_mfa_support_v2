@@ -16,18 +16,19 @@ def preprocess_input(description, tokenizer, maxlen=200):
     padded_seq = pad_sequences(seq, padding='post', maxlen=maxlen)
     return padded_seq
 
+
+# Load model
+model = tf.keras.models.load_model(MODEL_PATH)
+print("Model loaded successfully.")
+
+# Load tokenizer
+with open(TOKENIZER_PATH, 'rb') as f:
+    tokenizer = pickle.load(f)
+print("Tokenizer loaded successfully.")
+
 @app.route('/')
 def test():
     try:
-        # Load model
-        model = tf.keras.models.load_model(MODEL_PATH)
-        print("Model loaded successfully.")
-
-        # Load tokenizer
-        with open(TOKENIZER_PATH, 'rb') as f:
-            tokenizer = pickle.load(f)
-        print("Tokenizer loaded successfully.")
-
         # Hardcoded description
         description = "Community network contribution in the field of education in Tanzania."
 
@@ -52,29 +53,10 @@ def test():
 
 @app.route('/api/predict', methods=["POST"])
 def predict():
-
-    print("cat0")
-    data = request.get_json()
-    description = data["description"]
-
-    print(data, description)
-    
     try:
-        # Load model
-        model = tf.keras.models.load_model(MODEL_PATH)
-        print("Model loaded successfully.")
-
-        # Load tokenizer
-        with open(TOKENIZER_PATH, 'rb') as f:
-            tokenizer = pickle.load(f)
-        print("Tokenizer loaded successfully.")
-
-        # Get description
-        print("cat1")
+        # Get the input data
         data = request.get_json()
         description = data["description"]
-
-        print(data, description)
 
         # Preprocess description
         input_data = preprocess_input(description, tokenizer)
@@ -82,17 +64,16 @@ def predict():
         # Make prediction
         prediction = model.predict(input_data)
         predicted_class = prediction.argmax(axis=1)[0]
-        print(f"Predicted Class: {predicted_class}")
-        print(f"Prediction Probabilities: {prediction.tolist()}")
 
-        # Return results
-        return (
-            f"Description: {description}<br>"
-            f"Predicted Class: {predicted_class}<br>"
-            f"Prediction Probabilities: {prediction.tolist()}"
-        )
+        # Return results as JSON
+        return {
+            "description": description,
+            "predicted_class": int(predicted_class),  # Ensure JSON-serializable
+            "prediction_probabilities": prediction.tolist(),  # Convert to list for JSON
+        }
     except Exception as e:
-        return f"Error: {e}"
+        return {"error": str(e)}, 500
+
 
 if __name__ == "__main__":
     app.run(debug=True)
