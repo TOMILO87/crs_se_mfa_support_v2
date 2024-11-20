@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Predict Page</title>
+  </head>
+  <body>
+    <h1>Predict Target Class</h1>
+    <form method="POST" action="/predict_page">
+      <label for="description">Enter Description:</label><br />
+      <textarea
+        id="description"
+        name="description"
+        rows="5"
+        cols="50"
+        required
+      ></textarea
+      ><br /><br />
+      <button type="submit">Predict</button>
+    </form>
+
+    {% if description %}
+    <h2>Results:</h2>
+    <p><strong>Description:</strong> {{ description }}</p>
+    <p><strong>Predicted Class:</strong> {{ predicted_class }}</p>
+    <p>
+      <strong>Prediction Probabilities:</strong> {{ prediction_probabilities }}
+    </p>
+    {% elif error %}
+    <p style="color: red"><strong>Error:</strong> {{ error }}</p>
+    {% endif %}
+  </body>
+</html>

@@ -17,8 +17,7 @@ export default function Predict() {
         body: JSON.stringify({ description }),
       });
 
-      print(response);
-      return;
+      console.log(body, description);
 
       if (response.ok) {
         const data = await response.json();
