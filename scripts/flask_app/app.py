@@ -83,13 +83,13 @@ def predict():
         prediction = model.predict(input_data)
         predicted_class = prediction.argmax(axis=1)[0]
         print(f"Predicted Class: {predicted_class}")
-        print(f"Prediction Probabilities: {prediction.tolist()}")
+        print(f"Prediction Probabilities: {prediction}")
 
         # Return results
         return (
             f"Description: {description}<br>"
             f"Predicted Class: {predicted_class}<br>"
-            f"Prediction Probabilities: {prediction.tolist()}"
+            f"Prediction Probabilities: {prediction}"
         )
     except Exception as e:
         return f"Error: {e}"

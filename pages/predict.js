@@ -17,6 +17,9 @@ export default function Predict() {
         body: JSON.stringify({ description }),
       });
 
+      print(response);
+      return;
+
       if (response.ok) {
         const data = await response.json();
         setPredictedClass(data.predicted_class); // Update key to match Flask response
