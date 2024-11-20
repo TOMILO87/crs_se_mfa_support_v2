@@ -74,20 +74,12 @@ def make_prediction(model, tokenizer, label_encoder, description):
     """Make prediction for a given model and tokenizer."""
     input_data = preprocess_input(description, tokenizer)
     prediction = model.predict(input_data)
-    
-    # Sort probabilities and labels in descending order of probability
-    sorted_indices = np.argsort(prediction[0])[::-1]
-    sorted_probs = prediction[0][sorted_indices]
-    sorted_labels = label_encoder.classes_[sorted_indices]
-    
-    # Limit to top 3 results
-    top_probs = sorted_probs[:3]
-    top_labels = sorted_labels[:3]
-
+    pred_class = prediction.argmax(axis=1)[0]
+    pred_label = label_encoder.classes_[pred_class]
     return {
-        "predicted_class": int(sorted_indices[0]),  # The highest probability index
-        "label": sorted_labels[0],  # The corresponding class label
-        "prediction_probabilities": list(zip(top_labels, top_probs))  # Pair of label and probability
+        "predicted_class": int(pred_class),  # Convert to int for JSON serialization
+        "prediction_probabilities": prediction.tolist()[0],  # Convert to list for JSON
+        "label": pred_label
     }
 
 @app.route("/api/predict", methods=["POST"])

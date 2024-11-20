@@ -22,13 +22,13 @@
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
       }
       textarea {
-        width: calc(100% - 20px);
+        width: calc(100% - 20px); /* Add padding to match the container */
         padding: 10px;
         margin-bottom: 10px;
         border-radius: 4px;
         border: 1px solid #ccc;
-        box-sizing: border-box;
-        resize: none;
+        box-sizing: border-box; /* Include padding in width calculation */
+        resize: none; /* Disable dragging to resize (optional) */
       }
       button {
         background-color: #4caf50;
@@ -61,7 +61,7 @@
   </head>
   <body>
     <div class="container">
-      <h1>Planit 🤖 Assistent</h1>
+      <h1>Planit assistent 🤖</h1>
       <form action="/predict" method="POST">
         <textarea
           name="description"
@@ -75,15 +75,22 @@
 
       {% if predictions %}
       <div class="prediction">
-        <h3>Resultat:</h3>
+        <h3>Predictions:</h3>
         {% for model, result in predictions.items() %}
-        <h4>{{ model.capitalize() }} Förslag:</h4>
+        <h4>{{ model.capitalize() }} Prediction:</h4>
         <p><strong>Predicted Class:</strong> {{ result.label }}</p>
+        <p>
+          <strong>Predicted Class Index:</strong> {{ result.predicted_class }}
+        </p>
         <h4>Prediction Probabilities:</h4>
         <ul class="probabilities">
-          {% for label, prob in result.prediction_probabilities %}
-          <li>{{ label }}: {{ (prob * 100) | round(2) }}%</li>
-          {% endfor %}
+          {% if result.prediction_probabilities and
+          result.prediction_probabilities|length > 0 %} {% for prob in
+          result.prediction_probabilities[:3] %}
+          <li>{{ result.label }}: {{ (prob * 100) | round(2) }}%</li>
+          {% endfor %} {% else %}
+          <li>No prediction probabilities available</li>
+          {% endif %}
         </ul>
         {% endfor %}
       </div>
