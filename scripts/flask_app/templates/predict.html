@@ -77,13 +77,18 @@
       <div class="prediction">
         <h3>Resultat:</h3>
         {% for model, result in predictions.items() %}
-        <h4><u>Fält: {{ model.capitalize() }}:</u></h4>
+        <h4>
+          <u>{{ "Sector" if model == "category" else model.capitalize() }}:</u>
+        </h4>
         <p><strong>Förslag:</strong> {{ result.label }}</p>
         <h4>Förslag sannolikhet:</h4>
         <ul class="probabilities">
-          {% for label, prob in result.prediction_probabilities %}
+          {% if result.prediction_probabilities %} {% for label, prob in
+          result.prediction_probabilities[:3] %}
           <li>{{ label }}: {{ (prob * 100) | round(2) }}%</li>
-          {% endfor %}
+          {% endfor %} {% else %}
+          <li>No valid predictions available</li>
+          {% endif %}
         </ul>
         {% endfor %}
       </div>

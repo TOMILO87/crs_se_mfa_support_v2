@@ -9,8 +9,8 @@ output_test = "../data/test_data.csv"
 output_identify_keywords = "../data/identify_keywords_data.csv"
 
 # Proportions for splitting
-train_proportion = 0.85
-test_proportion = 0.15
+train_proportion = 0.90
+test_proportion = 0.10
 identify_keywords_proportion = 0
 
 # Read the combined data

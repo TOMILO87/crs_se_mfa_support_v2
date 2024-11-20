@@ -9,7 +9,7 @@ INPUT_DIR = "../data/"
 OUTPUT_FILE = "../data/CRS_combined_data.csv"
 
 # List of columns to extract
-COLUMN_NAMES = ["Year", "Gender", "Environment", "USD_Disbursement", "PurposeCode", "LongDescription", "ShortDescription", "ChannelName", "ChannelReportedName"]
+COLUMN_NAMES = ["Year", "Gender", "Environment", "DIG", "Trade", "RMNCH", "Biodiversity", "ClimateMitigation", "ClimateAdaptation", "Desertification", "USD_Disbursement", "PurposeCode", "LongDescription", "ShortDescription", "ChannelName", "ChannelReportedName"]
 
 # List of years to process
 YEARS = ["2018", "2019", "2020", "2021", "2022"]
