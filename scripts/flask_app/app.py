@@ -55,7 +55,7 @@ def predict():
 
     print("cat0")
     data = request.get_json()
-    description = data[description]
+    description = data["description"]
 
     print(data, description)
     
@@ -72,7 +72,7 @@ def predict():
         # Get description
         print("cat1")
         data = request.get_json()
-        description = data[description]
+        description = data["description"]
 
         print(data, description)
 
