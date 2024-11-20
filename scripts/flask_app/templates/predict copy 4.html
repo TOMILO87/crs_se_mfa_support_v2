@@ -61,16 +61,16 @@
   </head>
   <body>
     <div class="container">
-      <h1>CRS AI hjälper</h1>
+      <h1>Model Predictions</h1>
       <form action="/predict" method="POST">
         <textarea
           name="description"
           rows="4"
-          placeholder="Insatsbeskrivning (engelska)..."
+          placeholder="Enter description..."
         >
 {{ request.form.get('description', '') }}</textarea
         ><br />
-        <button type="submit">Få förslag</button>
+        <button type="submit">Get Prediction</button>
       </form>
 
       {% if predictions %}
@@ -84,8 +84,7 @@
         </p>
         <h4>Prediction Probabilities:</h4>
         <ul class="probabilities">
-          {% if result.prediction_probabilities and
-          result.prediction_probabilities|length > 0 %} {% for prob in
+          {% if result.prediction_probabilities %} {% for prob in
           result.prediction_probabilities|slice(0, 3) %}
           <li>{{ result.label }}: {{ (prob * 100) | round(2) }}%</li>
           {% endfor %} {% else %}
