@@ -1,119 +1,98 @@
-from flask import Flask, request, render_template, jsonify
-from flask_cors import CORS
-import pickle
+from flask import Flask, request
 import tensorflow as tf
+import pickle
 from tensorflow.keras.preprocessing.sequence import pad_sequences
-import os
 
-# Set TensorFlow to use only CPU and limit memory usage
-os.environ["CUDA_VISIBLE_DEVICES"] = "-1"  # Disable GPU if not needed
-
-# Limit TensorFlow memory usage (only for GPU, skip for CPU)
-physical_devices = tf.config.experimental.list_physical_devices('GPU')
-if physical_devices:
-    try:
-        # Limit TensorFlow to a fraction of GPU memory if GPU is available
-        tf.config.experimental.set_memory_growth(physical_devices[0], True)
-        print("GPU memory growth set successfully.")
-    except:
-        pass  # Ignore if no GPU is available
-else:
-    print("No GPU found, proceeding without memory limits.")
-
-# Initialize Flask app
 app = Flask(__name__)
-CORS(app)
 
-# Paths to the model and tokenizer files on the persistent disk
+# Paths to the model and tokenizer files
 MODEL_PATH = '/var/models/Gender_model.keras'
 TOKENIZER_PATH = '/var/models/Gender_tokenizer.pickle'
 
-# Initialize placeholders for the model and tokenizer
-model = None
-tokenizer = None
-
-def load_model_and_tokenizer():
-    print("...Model loaded")
-    global model, tokenizer
-    """Load the model and tokenizer once when the app starts."""
-    try:
-        if os.path.exists(MODEL_PATH) and os.path.exists(TOKENIZER_PATH):
-            model = tf.keras.models.load_model(MODEL_PATH)
-            with open(TOKENIZER_PATH, 'rb') as f:
-                tokenizer = pickle.load(f)
-            print("Model and tokenizer loaded successfully.")
-        else:
-            print("Model or tokenizer not found. App will start without them.")
-    except Exception as e:
-        print(f"Error loading model or tokenizer: {e}")
-
-# Load the model and tokenizer once when the app starts
-load_model_and_tokenizer()
-
+# Preprocess function
 def preprocess_input(description, tokenizer, maxlen=200):
     """Tokenize and pad the input description."""
     seq = tokenizer.texts_to_sequences([description])
     padded_seq = pad_sequences(seq, padding='post', maxlen=maxlen)
     return padded_seq
 
-@app.route('/', methods=['GET', 'POST'])
-def index():
-    """Main page with form submission for predictions."""
-    prediction_result = None
-    prediction_probabilities = None
-    description = ""
+@app.route('/')
+def test():
+    try:
+        # Load model
+        model = tf.keras.models.load_model(MODEL_PATH)
+        print("Model loaded successfully.")
 
-    print("cat")
-    print(model)
+        # Load tokenizer
+        with open(TOKENIZER_PATH, 'rb') as f:
+            tokenizer = pickle.load(f)
+        print("Tokenizer loaded successfully.")
 
-    if request.method == 'POST':
-        description = request.form['description']
-        
-        if description.strip() and model and tokenizer:
-            input_data = preprocess_input(description, tokenizer)
-            prediction = model.predict(input_data)
-            print(prediction)
-            predicted_class = prediction.argmax(axis=1)[0]
-            prediction_probabilities = prediction.tolist()
-            print(prediction_probabilities)
-            prediction_result = predicted_class
-        else:
-            prediction_result = "Model not available or description missing."
+        # Hardcoded description
+        description = "Community network contribution in the field of education in Tanzania."
 
-    return render_template(
-        'index.html',
-        prediction=prediction_result,
-        probabilities=prediction_probabilities,
-        description=description
-    )
+        # Preprocess description
+        input_data = preprocess_input(description, tokenizer)
 
-@app.route('/api/predict', methods=['POST'])
-def api_predict():
-    """API endpoint for predictions."""
-    data = request.json
-    description = data.get("description", "")
+        # Make prediction
+        prediction = model.predict(input_data)
+        predicted_class = prediction.argmax(axis=1)[0]
+        print(f"Predicted Class: {predicted_class}")
+        print(f"Prediction Probabilities: {prediction.tolist()}")
 
-    if not description.strip():
-        return jsonify({"error": "Description cannot be empty"}), 400
+        # Return results
+        return (
+            f"Model and tokenizer loaded successfully!<br>"
+            f"Description: {description}<br>"
+            f"Predicted Class: {predicted_class}<br>"
+            f"Prediction Probabilities: {prediction.tolist()}"
+        )
+    except Exception as e:
+        return f"Error: {e}"
 
-    if not model or not tokenizer:
-        return jsonify({"error": "Model or tokenizer not loaded."}), 500
+@app.route('/api/predict', methods=["POST"])
+def predict():
 
-    input_data = preprocess_input(description, tokenizer)
-    prediction = model.predict(input_data)
-    predicted_class = prediction.argmax(axis=1)[0]
+    print("cat0")
+    data = request.get_json()
+    description = data["description"]
 
-    return jsonify({
-        "prediction": int(predicted_class),
-        "probabilities": prediction.tolist()
-    })
+    print(data, description)
+    
+    try:
+        # Load model
+        model = tf.keras.models.load_model(MODEL_PATH)
+        print("Model loaded successfully.")
 
-# Health check endpoint
-@app.route('/health', methods=['GET'])
-def health():
-    """Health check to confirm service is running."""
-    return jsonify({"status": "ok"}), 200
+        # Load tokenizer
+        with open(TOKENIZER_PATH, 'rb') as f:
+            tokenizer = pickle.load(f)
+        print("Tokenizer loaded successfully.")
+
+        # Get description
+        print("cat1")
+        data = request.get_json()
+        description = data["description"]
+
+        print(data, description)
+
+        # Preprocess description
+        input_data = preprocess_input(description, tokenizer)
+
+        # Make prediction
+        prediction = model.predict(input_data)
+        predicted_class = prediction.argmax(axis=1)[0]
+        print(f"Predicted Class: {predicted_class}")
+        print(f"Prediction Probabilities: {prediction.tolist()}")
+
+        # Return results
+        return (
+            f"Description: {description}<br>"
+            f"Predicted Class: {predicted_class}<br>"
+            f"Prediction Probabilities: {prediction.tolist()}"
+        )
+    except Exception as e:
+        return f"Error: {e}"
 
 if __name__ == "__main__":
-    # Use Gunicorn for production deployment
-    app.run(host="0.0.0.0", port=5001, debug=False)  # Set debug=False for production
+    app.run(debug=True)

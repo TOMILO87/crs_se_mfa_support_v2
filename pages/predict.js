@@ -2,7 +2,7 @@ import { useState } from "react";
 
 export default function Predict() {
   const [description, setDescription] = useState("");
-  const [prediction, setPrediction] = useState(null);
+  const [predictedClass, setPredictedClass] = useState(null);
   const [probabilities, setProbabilities] = useState(null);
 
   const handleSubmit = async (e) => {
@@ -19,8 +19,8 @@ export default function Predict() {
 
       if (response.ok) {
         const data = await response.json();
-        setPrediction(data.prediction);
-        setProbabilities(data.probabilities);
+        setPredictedClass(data.predicted_class); // Update key to match Flask response
+        setProbabilities(data.prediction_probabilities); // Update key to match Flask response
       } else {
         console.error("Failed to fetch prediction");
       }
@@ -31,7 +31,7 @@ export default function Predict() {
 
   return (
     <div>
-      <h1>Predict Target Class (check)</h1>
+      <h1>Predict Target Class</h1>
       <form onSubmit={handleSubmit}>
         <textarea
           rows="5"
@@ -45,11 +45,11 @@ export default function Predict() {
         <button type="submit">Predict</button>
       </form>
 
-      {prediction !== null && (
+      {predictedClass !== null && (
         <div>
-          <h2>Prediction: {prediction}</h2>
+          <h2>Predicted Class: {predictedClass}</h2>
           {probabilities && (
-            <p>Probabilities: {JSON.stringify(probabilities)}</p>
+            <p>Prediction Probabilities: {JSON.stringify(probabilities)}</p>
           )}
         </div>
       )}
