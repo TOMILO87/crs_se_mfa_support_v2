@@ -68,6 +68,7 @@ def predict():
         description = data.description
 
         print(data, description)
+        return
 
         # Preprocess description
         input_data = preprocess_input(description, tokenizer)
