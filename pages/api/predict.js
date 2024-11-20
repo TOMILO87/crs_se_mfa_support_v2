@@ -1,9 +1,9 @@
-// pages/api/predict.js
 export default async function handler(req, res) {
   if (req.method === "POST") {
     try {
       const { description } = req.body;
 
+      // Forward the request to the Flask API (deployed on Render)
       const response = await fetch(
         "https://crs-se-mfa-support-v2.onrender.com/api/predict",
         {
@@ -17,7 +17,7 @@ export default async function handler(req, res) {
 
       if (response.ok) {
         const data = await response.json();
-        res.status(200).json(data);
+        res.status(200).json(data); // Return Flask's response to the frontend
       } else {
         res
           .status(response.status)

@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, g
+from flask import Flask, request, jsonify, g, render_template
 from flask_cors import CORS
 import tensorflow as tf
 import pickle
@@ -65,6 +65,30 @@ def predict_api():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+@app.route("/predict", methods=["GET", "POST"])
+def predict_page():
+    """Prediction page for inputting a description and getting a prediction."""
+    if request.method == "POST":
+        description = request.form.get("description", "")
+
+        if not description:
+            return render_template("predict.html", error="Description is required")
+
+        # Load model and tokenizer
+        model, tokenizer = get_model_and_tokenizer()
+
+        # Preprocess the input description
+        input_data = preprocess_input(description, tokenizer)
+
+        # Make prediction
+        prediction = model.predict(input_data)
+        predicted_class = prediction.argmax(axis=1)[0]
+        prediction_probabilities = prediction.tolist()[0]
+
+        return render_template("predict.html", predicted_class=predicted_class, prediction_probabilities=prediction_probabilities)
+
+    return render_template("predict.html")
 
 @app.route("/")
 def home():

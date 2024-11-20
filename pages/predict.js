@@ -9,6 +9,7 @@ export default function Predict() {
     e.preventDefault();
 
     try {
+      // Send the description to the Next.js API route
       const response = await fetch("/api/predict", {
         method: "POST",
         headers: {
@@ -17,13 +18,10 @@ export default function Predict() {
         body: JSON.stringify({ description }),
       });
 
-      console.log(response);
-
       if (response.ok) {
         const data = await response.json();
-        console.log(data);
-        setPredictedClass(data.predicted_class); // Update key to match Flask response
-        setProbabilities(data.prediction_probabilities); // Update key to match Flask response
+        setPredictedClass(data.predicted_class);
+        setProbabilities(data.prediction_probabilities);
       } else {
         console.error("Failed to fetch prediction");
       }
