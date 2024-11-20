@@ -15,7 +15,13 @@ export default async function handler(req, res) {
         }
       );
 
-      console.log(response);
+      const data = await response.json();
+
+      console.log(data);
+
+      res.status(200).json("cat time");
+
+      return;
 
       if (response.ok) {
         const data = await response.json();
