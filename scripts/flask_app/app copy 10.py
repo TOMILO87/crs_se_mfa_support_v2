@@ -11,26 +11,23 @@ app = Flask(__name__)
 # Enable CORS for all routes
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 
-# Paths to the model and tokenizer files (Add more models here as needed)
+# Paths to the model and tokenizer files
 MODEL_PATHS = {
     "gender": "/var/models/Gender_model.keras",
     "category": "/var/models/Category_model.keras",
-    "environment": "/var/models/Environment_model.keras",
-    #"biodiversity": "/var/models/Biodiversity_model.keras"  # Example of adding a new model
+    "environment": "/var/models/Environment_model.keras"
 }
 
 TOKENIZER_PATHS = {
     "gender": "/var/models/Gender_tokenizer.pickle",
     "category": "/var/models/Category_tokenizer.pickle",
-    "environment": "/var/models/Environment_tokenizer.pickle",
-    #"biodiversity": "/var/models/Biodiversity_tokenizer.pickle"  # Corresponding tokenizer
+    "environment": "/var/models/Environment_tokenizer.pickle"
 }
 
 LABEL_ENCODER_PATHS = {
     "gender": "/var/models/Gender_label_encoder.pickle",
     "category": "/var/models/Category_label_encoder.pickle",
-    "environment": "/var/models/Environment_label_encoder.pickle",
-    #"biodiversity": "/var/models/Biodiversity_label_encoder.pickle"  # For new model
+    "environment": "/var/models/Environment_label_encoder.pickle"
 }
 
 # Preprocess function for text descriptions
@@ -69,19 +66,6 @@ def cleanup(exception=None):
     g.pop("tokenizers", None)
     g.pop("label_encoders", None)
 
-# Helper function for making predictions
-def make_prediction(model, tokenizer, label_encoder, description):
-    """Make prediction for a given model and tokenizer."""
-    input_data = preprocess_input(description, tokenizer)
-    prediction = model.predict(input_data)
-    pred_class = prediction.argmax(axis=1)[0]
-    pred_label = label_encoder.classes_[pred_class]
-    return {
-        "predicted_class": int(pred_class),  # Convert to int for JSON serialization
-        "prediction_probabilities": prediction.tolist()[0],  # Convert to list for JSON
-        "label": pred_label
-    }
-
 @app.route("/api/predict", methods=["POST"])
 def predict_api():
     """API endpoint for making predictions."""
@@ -97,12 +81,40 @@ def predict_api():
 
         predictions = {}
 
-        # Predict for each model dynamically
-        for model_key in models:
-            model = models[model_key]
-            tokenizer = tokenizers[model_key]
-            label_encoder = label_encoders[model_key]
-            predictions[model_key] = make_prediction(model, tokenizer, label_encoder, description)
+        # Predict with Gender model
+        gender_model = models["gender"]
+        gender_tokenizer = tokenizers["gender"]
+        input_data = preprocess_input(description, gender_tokenizer)
+        gender_prediction = gender_model.predict(input_data)
+        gender_pred_class = gender_prediction.argmax(axis=1)[0]
+        predictions["gender"] = {
+            "predicted_class": gender_pred_class,
+            "prediction_probabilities": gender_prediction.tolist()[0]
+        }
+
+        # Predict with Category model
+        category_model = models["category"]
+        category_tokenizer = tokenizers["category"]
+        input_data = preprocess_input(description, category_tokenizer)
+        category_prediction = category_model.predict(input_data)
+        category_pred_class = category_prediction.argmax(axis=1)[0]
+        predictions["category"] = {
+            "predicted_class": category_pred_class,
+            "prediction_probabilities": category_prediction.tolist()[0],
+            "category_label": label_encoders["category"].classes_[category_pred_class]
+        }
+
+        # Predict with Environment model
+        environment_model = models["environment"]
+        environment_tokenizer = tokenizers["environment"]
+        input_data = preprocess_input(description, environment_tokenizer)
+        environment_prediction = environment_model.predict(input_data)
+        environment_pred_class = environment_prediction.argmax(axis=1)[0]
+        predictions["environment"] = {
+            "predicted_class": environment_pred_class,
+            "prediction_probabilities": environment_prediction.tolist()[0],
+            "environment_label": label_encoders["environment"].classes_[environment_pred_class]
+        }
 
         return jsonify(predictions)
 
@@ -123,12 +135,40 @@ def predict_page():
 
         predictions = {}
 
-        # Predict for each model dynamically
-        for model_key in models:
-            model = models[model_key]
-            tokenizer = tokenizers[model_key]
-            label_encoder = label_encoders[model_key]
-            predictions[model_key] = make_prediction(model, tokenizer, label_encoder, description)
+        # Predict with Gender model
+        gender_model = models["gender"]
+        gender_tokenizer = tokenizers["gender"]
+        input_data = preprocess_input(description, gender_tokenizer)
+        gender_prediction = gender_model.predict(input_data)
+        gender_pred_class = gender_prediction.argmax(axis=1)[0]
+        predictions["gender"] = {
+            "predicted_class": gender_pred_class,
+            "prediction_probabilities": gender_prediction.tolist()[0]
+        }
+
+        # Predict with Category model
+        category_model = models["category"]
+        category_tokenizer = tokenizers["category"]
+        input_data = preprocess_input(description, category_tokenizer)
+        category_prediction = category_model.predict(input_data)
+        category_pred_class = category_prediction.argmax(axis=1)[0]
+        predictions["category"] = {
+            "predicted_class": category_pred_class,
+            "prediction_probabilities": category_prediction.tolist()[0],
+            "category_label": label_encoders["category"].classes_[category_pred_class]
+        }
+
+        # Predict with Environment model
+        environment_model = models["environment"]
+        environment_tokenizer = tokenizers["environment"]
+        input_data = preprocess_input(description, environment_tokenizer)
+        environment_prediction = environment_model.predict(input_data)
+        environment_pred_class = environment_prediction.argmax(axis=1)[0]
+        predictions["environment"] = {
+            "predicted_class": environment_pred_class,
+            "prediction_probabilities": environment_prediction.tolist()[0],
+            "environment_label": label_encoders["environment"].classes_[environment_pred_class]
+        }
 
         return render_template("predict.html", predictions=predictions)
 

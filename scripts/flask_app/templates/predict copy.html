@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Model Prediction</title>
+  </head>
+  <body>
+    <h1>Model Predictions</h1>
+    <form action="/predict" method="POST">
+      <textarea
+        name="description"
+        rows="4"
+        cols="50"
+        placeholder="Enter description..."
+      ></textarea
+      ><br />
+      <button type="submit">Get Prediction</button>
+    </form>
+
+    {% if predictions %}
+    <h2>Predictions</h2>
+    <div>
+      <h3>Gender Prediction:</h3>
+      <p>Predicted Class: {{ predictions.gender.predicted_class }}</p>
+      <p>
+        Prediction Probabilities: {{ predictions.gender.prediction_probabilities
+        }}
+      </p>
+    </div>
+
+    <div>
+      <h3>Category Prediction:</h3>
+      <p>Predicted Class: {{ predictions.category.predicted_class }}</p>
+      <p>Category Label: {{ predictions.category.category_label }}</p>
+      <p>
+        Prediction Probabilities: {{
+        predictions.category.prediction_probabilities }}
+      </p>
+    </div>
+
+    <div>
+      <h3>Environment Prediction:</h3>
+      <p>Predicted Class: {{ predictions.environment.predicted_class }}</p>
+      <p>Environment Label: {{ predictions.environment.environment_label }}</p>
+      <p>
+        Prediction Probabilities: {{
+        predictions.environment.prediction_probabilities }}
+      </p>
+    </div>
+    {% endif %}
+  </body>
+</html>
