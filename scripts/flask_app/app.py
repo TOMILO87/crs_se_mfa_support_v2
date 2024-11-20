@@ -57,6 +57,10 @@ def predict():
     print(request.form)
     description = request.form["description"]
     print(f"Description: {description}")
+
+    print("Request received!")
+    # Parse JSON payload
+    data = request.get_json()
     return 
     try:
         # Load model
