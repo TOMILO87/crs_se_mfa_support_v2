@@ -52,6 +52,18 @@ def test():
 
 @app.route('/api/predict', methods=["POST"])
 def predict():
+    
+    print("cat")
+    #print(request.form)
+    # description = request.form["description"]
+    #print(f"Description: {description}")
+
+    print("Request received!")
+    # Parse JSON payload
+    data = request.get_json()
+    print(data)
+    print(request)
+    return 
     try:
         # Load model
         model = tf.keras.models.load_model(MODEL_PATH)
@@ -62,12 +74,9 @@ def predict():
             tokenizer = pickle.load(f)
         print("Tokenizer loaded successfully.")
 
-        # Get description
-        print("cat1")
-        data = request.get_json()
-        description = data.description
-
-        print(data, description)
+        # Get description from the form
+        description = request.form["description"]
+        print(f"Description: {description}")
 
         # Preprocess description
         input_data = preprocess_input(description, tokenizer)
