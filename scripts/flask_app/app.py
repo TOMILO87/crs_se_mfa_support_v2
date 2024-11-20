@@ -29,15 +29,6 @@ print("Tokenizer loaded successfully.")
 @app.route('/')
 def test():
     try:
-        # Load model
-        model = tf.keras.models.load_model(MODEL_PATH)
-        print("Model loaded successfully.")
-
-        # Load tokenizer
-        with open(TOKENIZER_PATH, 'rb') as f:
-            tokenizer = pickle.load(f)
-        print("Tokenizer loaded successfully.")
-
         # Hardcoded description
         description = "Community network contribution in the field of education in Tanzania."
 
@@ -70,15 +61,6 @@ def predict():
     print(data, description)
     
     try:
-        # Load model
-        model = tf.keras.models.load_model(MODEL_PATH)
-        print("Model loaded successfully.")
-
-        # Load tokenizer
-        with open(TOKENIZER_PATH, 'rb') as f:
-            tokenizer = pickle.load(f)
-        print("Tokenizer loaded successfully.")
-
         # Get description
         print("cat1")
         data = request.get_json()
