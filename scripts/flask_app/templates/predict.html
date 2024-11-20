@@ -61,7 +61,7 @@
   </head>
   <body>
     <div class="container">
-      <h1>CRS AI hjälper</h1>
+      <h1>Planit AI assistent</h1>
       <form action="/predict" method="POST">
         <textarea
           name="description"
@@ -86,7 +86,7 @@
         <ul class="probabilities">
           {% if result.prediction_probabilities and
           result.prediction_probabilities|length > 0 %} {% for prob in
-          result.prediction_probabilities|slice(0, 3) %}
+          result.prediction_probabilities[:3] %}
           <li>{{ result.label }}: {{ (prob * 100) | round(2) }}%</li>
           {% endfor %} {% else %}
           <li>No prediction probabilities available</li>

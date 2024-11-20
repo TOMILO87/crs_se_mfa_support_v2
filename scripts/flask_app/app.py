@@ -130,6 +130,9 @@ def predict_page():
             label_encoder = label_encoders[model_key]
             predictions[model_key] = make_prediction(model, tokenizer, label_encoder, description)
 
+        print("Description:", description)
+        print("Predictions:", predictions)
+
         return render_template("predict.html", predictions=predictions)
 
     return render_template("predict.html")
