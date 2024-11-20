@@ -61,6 +61,7 @@ def predict():
     print("Request received!")
     # Parse JSON payload
     data = request.get_json()
+    print(data)
     return 
     try:
         # Load model
