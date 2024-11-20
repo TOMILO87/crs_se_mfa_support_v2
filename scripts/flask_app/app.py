@@ -52,6 +52,13 @@ def test():
 
 @app.route('/api/predict', methods=["POST"])
 def predict():
+
+    print("cat0")
+    data = request.get_json()
+    description = data.description
+
+    print(data, description)
+    
     try:
         # Load model
         model = tf.keras.models.load_model(MODEL_PATH)
@@ -68,7 +75,6 @@ def predict():
         description = data.description
 
         print(data, description)
-        return
 
         # Preprocess description
         input_data = preprocess_input(description, tokenizer)
