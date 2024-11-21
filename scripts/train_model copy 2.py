@@ -15,7 +15,7 @@ data = pd.read_csv('../data/CRS_combined_data.csv')
 def preprocess_data(target_column, tokenizer=None):
     """
     Preprocesses data for training.
-    - Tokenizes and pads text in the 'longdescription' column.
+    - Tokenizes and pads text in the 'combineddescription' column.
     - Encodes the target column using LabelEncoder.
 
     Args:
@@ -29,13 +29,13 @@ def preprocess_data(target_column, tokenizer=None):
         label_encoder: Trained LabelEncoder for decoding labels.
         data_filtered: Filtered DataFrame used for training.
     """
-    # Drop rows with missing values in 'longdescription' or the target column
-    data_filtered = data.dropna(subset=['longdescription', target_column])
+    # Drop rows with missing values in 'combineddescription' or the target column
+    data_filtered = data.dropna(subset=['combineddescription', target_column])
     
     # Prepare input (X) and target (y) variables
-    X = data_filtered['longdescription'].values
+    X = data_filtered['combineddescription'].values
 
-    # Tokenize and pad the long descriptions if tokenizer is not provided
+    # Tokenize and pad the descriptions if tokenizer is not provided
     if tokenizer is None:
         tokenizer = Tokenizer(num_words=10000)
         tokenizer.fit_on_texts(X)

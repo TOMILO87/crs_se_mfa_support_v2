@@ -34,9 +34,11 @@ def map_purpose_code(code):
     elif code_str.startswith(("43", "5", "6", "9")): return "multisector/budget/unspecified"
     else: return "multisector/budget/unspecified"
 
-# Function to map Aid_t to parent type by extracting the first three characters
-def map_aid_t(aid_t):
-    return str(aid_t)[:3]  # Get the first three characters of Aid_t
+# Function to map Aid_t to parent type
+def map_aid_t(code):
+    code_str = str(code)
+    if code_str.startswith("A01"): return "A01"
+    ...
 
 # Initialize an empty DataFrame to store the combined data
 combined_data = pd.DataFrame()
@@ -67,8 +69,8 @@ for year in YEARS:
     # Map PurposeCode to the specified categories
     df_year['category'] = df_year['purposecode'].apply(map_purpose_code)
 
-    # Map Aid_t to parent aid type using the first three characters
-    df_year['parenttype'] = df_year['aid_t'].apply(map_aid_t)
+    # Map Aid_t to parent aid type
+    df_year['parenttype'] = df_year['aidtype'].apply(map_aid_t)
 
     # Create a new column that combines the specified description fields into a single string
     df_year['combineddescription'] = df_year[['longdescription', 'shortdescription', 'channelname', 'channelreportedname']].agg(' '.join, axis=1)

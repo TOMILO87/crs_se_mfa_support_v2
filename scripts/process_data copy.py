@@ -1,3 +1,5 @@
+# Combine several CRS files into one file
+
 import pandas as pd
 
 # Directory containing the data
@@ -34,10 +36,6 @@ def map_purpose_code(code):
     elif code_str.startswith(("43", "5", "6", "9")): return "multisector/budget/unspecified"
     else: return "multisector/budget/unspecified"
 
-# Function to map Aid_t to parent type by extracting the first three characters
-def map_aid_t(aid_t):
-    return str(aid_t)[:3]  # Get the first three characters of Aid_t
-
 # Initialize an empty DataFrame to store the combined data
 combined_data = pd.DataFrame()
 
@@ -48,30 +46,21 @@ for year in YEARS:
     
     # Read the current year's data into a DataFrame with all columns as strings
     df = pd.read_csv(file_path, delimiter='|', quotechar='"', dtype=str)
-
-    # Normalize column names to lowercase (or any other consistent format)
-    df.columns = df.columns.str.lower()  # Convert column names to lowercase
     
-    # Update COLUMN_NAMES to match the lowercase format (if applicable)
-    normalized_column_names = [col.lower() for col in COLUMN_NAMES]
-
     # Extract the specified columns, filling missing values to avoid NaNs
-    df_year = df[normalized_column_names].fillna("")
+    df_year = df[COLUMN_NAMES].fillna("")
 
     # Convert USD_Disbursement to numeric for filtering; rows with invalid entries will be set to NaN
-    df_year['usd_disbursement'] = pd.to_numeric(df_year['usd_disbursement'], errors='coerce')
+    df_year['USD_Disbursement'] = pd.to_numeric(df_year['USD_Disbursement'], errors='coerce')
     
     # Filter rows where USD_Disbursement > 0
-    df_year = df_year[df_year['usd_disbursement'] > 0]
+    df_year = df_year[df_year['USD_Disbursement'] > 0]
 
     # Map PurposeCode to the specified categories
-    df_year['category'] = df_year['purposecode'].apply(map_purpose_code)
-
-    # Map Aid_t to parent aid type using the first three characters
-    df_year['parenttype'] = df_year['aid_t'].apply(map_aid_t)
+    df_year['Category'] = df_year['PurposeCode'].apply(map_purpose_code)
 
     # Create a new column that combines the specified description fields into a single string
-    df_year['combineddescription'] = df_year[['longdescription', 'shortdescription', 'channelname', 'channelreportedname']].agg(' '.join, axis=1)
+    df_year['CombinedDescription'] = df_year[['LongDescription', 'ShortDescription', 'ChannelName', 'ChannelReportedName']].agg(' '.join, axis=1)
     
     # Convert all columns back to strings to ensure uniform data type
     df_year = df_year.astype(str)

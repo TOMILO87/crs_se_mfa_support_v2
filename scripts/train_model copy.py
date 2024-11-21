@@ -15,7 +15,7 @@ data = pd.read_csv('../data/CRS_combined_data.csv')
 def preprocess_data(target_column, tokenizer=None):
     """
     Preprocesses data for training.
-    - Tokenizes and pads text in the 'longdescription' column.
+    - Tokenizes and pads text in the 'LongDescription' column.
     - Encodes the target column using LabelEncoder.
 
     Args:
@@ -29,13 +29,13 @@ def preprocess_data(target_column, tokenizer=None):
         label_encoder: Trained LabelEncoder for decoding labels.
         data_filtered: Filtered DataFrame used for training.
     """
-    # Drop rows with missing values in 'longdescription' or the target column
-    data_filtered = data.dropna(subset=['longdescription', target_column])
+    # Drop rows with missing values in 'LongDescription' or the target column
+    data_filtered = data.dropna(subset=['LongDescription', target_column])
     
     # Prepare input (X) and target (y) variables
-    X = data_filtered['longdescription'].values
+    X = data_filtered['LongDescription'].values
 
-    # Tokenize and pad the long descriptions if tokenizer is not provided
+    # Tokenize and pad the descriptions if tokenizer is not provided
     if tokenizer is None:
         tokenizer = Tokenizer(num_words=10000)
         tokenizer.fit_on_texts(X)
@@ -64,7 +64,7 @@ def train_model(target_column):
     num_classes = len(label_encoder.classes_)
 
     # Split data into train and test sets
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.10) # since large data use 0.10 instead of suggested 0.20
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 
     # Define the model
     input_layer = keras.layers.Input(shape=(200,))
@@ -98,5 +98,5 @@ def train_model(target_column):
 
 # Main entry point
 if __name__ == "__main__":
-    target_column = 'gender'  # Change this to 'environment', 'gender', or other target columns as needed
+    target_column = 'Category'  # Change this to 'Environment', 'Gender', or other target columns as needed
     train_model(target_column)

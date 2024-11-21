@@ -21,7 +21,7 @@ MODEL_PATHS = {
     "environment": "/var/models/environment_model.keras",
     "gender": "/var/models/gender_model.keras",
     "parenttype": "/var/models/parenttype_model.keras",
-    #"recipientname": "/var/models/recipientname_model.keras",
+    "recipientname": "/var/models/recipientname_model.keras",
     "rmnch": "/var/models/rmnch_model.keras"
 }
 
@@ -34,7 +34,7 @@ TOKENIZER_PATHS = {
     "environment": "/var/models/environment_tokenizer.pickle",
     "gender": "/var/models/gender_tokenizer.pickle",
     "parenttype": "/var/models/parenttype_tokenizer.pickle",
-    #"recipientname": "/var/models/recipientname_tokenizer.pickle",
+    "recipientname": "/var/models/recipientname_tokenizer.pickle",
     "rmnch": "/var/models/rmnch_tokenizer.pickle"
 }
 
@@ -47,22 +47,8 @@ LABEL_ENCODER_PATHS = {
     "environment": "/var/models/environment_label_encoder.pickle",
     "gender": "/var/models/gender_label_encoder.pickle",
     "parenttype": "/var/models/parenttype_label_encoder.pickle",
-    #"recipientname": "/var/models/recipientname_label_encoder.pickle",
+    "recipientname": "/var/models/recipientname_label_encoder.pickle",
     "rmnch": "/var/models/rmnch_label_encoder.pickle"
-}
-
-# Map models to custom names
-CUSTOM_NAMES = {
-    "biodiversity": "Biologisk mångfald",
-    "category": "Sektor (grupp)",
-    "climateadaptation": "Klimatanpassning",
-    "climatemitigation": "Utsläppsminskning",
-    "dig": "Demokratisk och inkluderande samhällsstyrning",
-    "environment": "Miljö",
-    "gender": "Jämställdhet",
-    "parenttype": "Samarbetsform (grupp)",
-    "recipientname": "Mottagarland (låg träffsäkerhet)",
-    "rmnch": "Barnhälsa och mödravård"
 }
 
 # Preprocess function for text descriptions
@@ -72,31 +58,27 @@ def preprocess_input(description, tokenizer, maxlen=200):
     padded_seq = pad_sequences(seq, padding='post', maxlen=maxlen)
     return padded_seq
 
-# Utility function to load models, tokenizers, and label encoders for selected models
-def get_models_and_tokenizers(selected_models):
-    """Load and cache only the selected models, tokenizers, and label encoders."""
+# Utility function to load models, tokenizers, and label encoders
+def get_models_and_tokenizers():
+    """Load and cache the models, tokenizers, and label encoders in Flask's application context."""
     if "models" not in g:
         g.models = {}
+        for model_key, model_path in MODEL_PATHS.items():
+            g.models[model_key] = tf.keras.models.load_model(model_path)
+
     if "tokenizers" not in g:
         g.tokenizers = {}
+        for key, path in TOKENIZER_PATHS.items():
+            with open(path, 'rb') as f:
+                g.tokenizers[key] = pickle.load(f)
+
     if "label_encoders" not in g:
         g.label_encoders = {}
-
-    for model_key in selected_models:
-        if model_key not in g.models:
-            g.models[model_key] = tf.keras.models.load_model(MODEL_PATHS[model_key])
-        if model_key not in g.tokenizers:
-            with open(TOKENIZER_PATHS[model_key], 'rb') as f:
-                g.tokenizers[model_key] = pickle.load(f)
-        if model_key not in g.label_encoders:
-            with open(LABEL_ENCODER_PATHS[model_key], 'rb') as f:
-                g.label_encoders[model_key] = pickle.load(f)
-
-    return (
-        {key: g.models[key] for key in selected_models},
-        {key: g.tokenizers[key] for key in selected_models},
-        {key: g.label_encoders[key] for key in selected_models},
-    )
+        for key, path in LABEL_ENCODER_PATHS.items():
+            with open(path, 'rb') as f:
+                g.label_encoders[key] = pickle.load(f)
+    
+    return g.models, g.tokenizers, g.label_encoders
 
 @app.teardown_appcontext
 def cleanup(exception=None):
@@ -130,27 +112,24 @@ def make_prediction(model, tokenizer, label_encoder, description):
         "label": pred_label
     }
 
+
 @app.route("/api/predict", methods=["POST"])
 def predict_api():
     """API endpoint for making predictions."""
     try:
         data = request.get_json()
         description = data.get("description", "")
-        selected_models = data.get("selected_models", [])  # List of selected model keys
 
         if not description:
             return jsonify({"error": "Description is required"}), 400
 
-        if not selected_models:
-            return jsonify({"error": "No models selected"}), 400
-
-        # Load only the selected models, tokenizers, and label encoders
-        models, tokenizers, label_encoders = get_models_and_tokenizers(selected_models)
+        # Load models, tokenizers, and label encoders
+        models, tokenizers, label_encoders = get_models_and_tokenizers()
 
         predictions = {}
 
-        # Predict for each selected model dynamically
-        for model_key in selected_models:
+        # Predict for each model dynamically
+        for model_key in models:
             model = models[model_key]
             tokenizer = tokenizers[model_key]
             label_encoder = label_encoders[model_key]
@@ -166,49 +145,27 @@ def predict_page():
     """Prediction page for inputting a description and getting a prediction."""
     if request.method == "POST":
         description = request.form.get("description", "")
-        selected_models = request.form.getlist("selected_models")  # Get selected models from the form
 
         if not description:
-            return render_template(
-                "predict.html",
-                error="Description is required",
-                model_names=MODEL_PATHS.keys(),
-                custom_names=CUSTOM_NAMES,
-                selected_models=selected_models,
-            )
+            return render_template("predict.html", error="Description is required")
 
-        # Default to all models if none are selected
-        if not selected_models:
-            selected_models = list(MODEL_PATHS.keys())
-
-        # Load models, tokenizers, and label encoders for selected models
-        models, tokenizers, label_encoders = get_models_and_tokenizers(selected_models)
+        # Load models, tokenizers, and label encoders
+        models, tokenizers, label_encoders = get_models_and_tokenizers()
 
         predictions = {}
 
-        # Predict for each selected model
-        for model_key in selected_models:
+        # Predict for each model dynamically
+        for model_key in models:
             model = models[model_key]
             tokenizer = tokenizers[model_key]
             label_encoder = label_encoders[model_key]
             predictions[model_key] = make_prediction(model, tokenizer, label_encoder, description)
 
-        return render_template(
-            "predict.html",
-            predictions=predictions,
-            model_names=MODEL_PATHS.keys(),
-            custom_names=CUSTOM_NAMES,
-            selected_models=selected_models,
-        )
+        print("Description:", description)
 
-    # Render the form with all models listed
-    return render_template(
-        "predict.html",
-        model_names=MODEL_PATHS.keys(),
-        custom_names=CUSTOM_NAMES,
-        selected_models=[],
-    )
+        return render_template("predict.html", predictions=predictions)
 
+    return render_template("predict.html")
 
 @app.route("/")
 def home():

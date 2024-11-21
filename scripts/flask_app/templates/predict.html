@@ -7,7 +7,7 @@
     <style>
       body {
         font-family: Arial, sans-serif;
-        background-color: #f0f4f8;
+        background-color: #eafaf1;
         padding: 20px;
       }
       h1 {
@@ -41,6 +41,12 @@
       button:hover {
         background-color: #45a049;
       }
+      .model-selection {
+        margin-bottom: 20px;
+      }
+      .model-selection label {
+        margin-right: 10px;
+      }
       .prediction {
         margin-top: 20px;
         padding: 15px;
@@ -57,7 +63,79 @@
       .prediction .probabilities li {
         margin: 5px 0;
       }
+      .info-icon {
+        display: inline-block;
+        margin-left: 5px;
+        color: #007bff;
+        cursor: pointer;
+        text-decoration: underline;
+      }
     </style>
+    <script>
+      function openInfoWindow() {
+        const infoContent = `
+  <!DOCTYPE html>
+  <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Category Mapping</title>
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          margin: 20px;
+          padding: 20px;
+          background-color: #f9f9f9;
+          border: 1px solid #ccc;
+          border-radius: 8px;
+          color: #333;
+          font-size: 12px;
+          line-height: 1.6;
+        }
+        h2 {
+          text-align: center;
+          color: #4caf50;
+        }
+        ul {
+          list-style-type: none;
+          padding: 0;
+        }
+        li {
+          margin: 5px 0;
+        }
+        strong {
+          color: #333;
+        }
+      </style>
+    </head>
+    <body>
+      <h2>Sektorgrupper</h2>
+      <ul>
+        <li><strong>Education:</strong> Börjar med 11</li>
+        <li><strong>Health:</strong> Börjar med 12</li>
+        <li><strong>Population:</strong> Börjar med 13</li>
+        <li><strong>Water:</strong> Börjar med 14</li>
+        <li><strong>Government/CSO:</strong> Börjar med 15</li>
+        <li><strong>Welfare/Services:</strong> Börjar med 16</li>
+        <li><strong>Transport:</strong> Börjar med 21</li>
+        <li><strong>Communications:</strong> Börjar med 22</li>
+        <li><strong>Energy:</strong> Börjar med 23</li>
+        <li><strong>Finance:</strong> Börjar med 24</li>
+        <li><strong>Business:</strong> Börjar med 25</li>
+        <li><strong>Agriculture/Forestry/Fishing:</strong> Börjar med 31</li>
+        <li><strong>Industry/Mining/Construction:</strong> Börjar med 32</li>
+        <li><strong>Trade/Tourism:</strong> Börjar med 33</li>
+        <li><strong>Environment:</strong> Börjar med 41</li>
+        <li><strong>Humanitarian/Reconstruction:</strong> Börjar med 72, 73, eller 74</li>
+        <li><strong>Multisector/Budget/Unspecified:</strong> Börjar med 43, 5, 6, eller 9</li>
+      </ul>
+    </body>
+  </html>
+`;
+        const newWindow = window.open("", "_blank", "width=500,height=400");
+        newWindow.document.write(infoContent);
+      }
+    </script>
   </head>
   <body>
     <div class="container">
@@ -69,7 +147,29 @@
           placeholder="Insatsbeskrivning (engelska)..."
         >
 {{ request.form.get('description', '') }}</textarea
-        ><br />
+        >
+        <div class="model-selection">
+          <h4>Välj fält:</h4>
+          {% for model in model_names %}
+          <label>
+            <input
+              type="checkbox"
+              name="selected_models"
+              value="{{ model }}"
+              {%
+              if
+              model
+              in
+              selected_models
+              %}checked{%
+              endif
+              %}
+            />
+            {{ custom_names.get(model, model.capitalize()) }}
+          </label>
+          {% endfor %}
+        </div>
+
         <button type="submit">Få förslag</button>
       </form>
 
@@ -78,17 +178,19 @@
         <h3>Resultat:</h3>
         {% for model, result in predictions.items() %}
         <h4>
-          <u>{{ "Sector" if model == "category" else model.capitalize() }}:</u>
+          <u>
+            {{ custom_names.get(model, model.capitalize()) }}: {% if model ==
+            "category" %}
+            <span class="info-icon" onclick="openInfoWindow()">ℹ️</span>
+            {% endif %}
+          </u>
         </h4>
         <p><strong>Förslag:</strong> {{ result.label }}</p>
         <h4>Förslag sannolikhet:</h4>
         <ul class="probabilities">
-          {% if result.prediction_probabilities %} {% for label, prob in
-          result.prediction_probabilities[:3] %}
+          {% for label, prob in result.prediction_probabilities[:3] %}
           <li>{{ label }}: {{ (prob * 100) | round(2) }}%</li>
-          {% endfor %} {% else %}
-          <li>No valid predictions available</li>
-          {% endif %}
+          {% endfor %}
         </ul>
         {% endfor %}
       </div>
