@@ -60,7 +60,7 @@ CUSTOM_NAMES = {
     "dig": "Demokratisk och inkluderande samhällsstyrning",
     "environment": "Miljö",
     "gender": "Jämställdhet",
-    "parenttype": "Samarbetsform (grupp)",
+    "parenttype": "Samarbetsform",
     "recipientname": "Mottagarland (låg träffsäkerhet)",
     "rmnch": "Barnhälsa och mödravård"
 }
