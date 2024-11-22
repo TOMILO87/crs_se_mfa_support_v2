@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Model Prediction</title>
+    <title>Planit 🤖 assistent</title>
     <style>
       body {
         font-family: Arial, sans-serif;
@@ -41,6 +41,10 @@
       button:hover {
         background-color: #45a049;
       }
+      button.disabled-button {
+        background-color: #d3d3d3;
+        cursor: not-allowed;
+      }
       .model-selection {
         margin-bottom: 20px;
       }
@@ -74,67 +78,119 @@
     <script>
       function openInfoWindow() {
         const infoContent = `
-  <!DOCTYPE html>
-  <html lang="en">
-    <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Category Mapping</title>
-      <style>
-        body {
-          font-family: Arial, sans-serif;
-          margin: 20px;
-          padding: 20px;
-          background-color: #f9f9f9;
-          border: 1px solid #ccc;
-          border-radius: 8px;
-          color: #333;
-          font-size: 12px;
-          line-height: 1.6;
-        }
-        h2 {
-          text-align: center;
-          color: #4caf50;
-        }
-        ul {
-          list-style-type: none;
-          padding: 0;
-        }
-        li {
-          margin: 5px 0;
-        }
-        strong {
-          color: #333;
-        }
-      </style>
-    </head>
-    <body>
-      <h2>Sektorgrupper</h2>
-      <ul>
-        <li><strong>Education:</strong> Börjar med 11</li>
-        <li><strong>Health:</strong> Börjar med 12</li>
-        <li><strong>Population:</strong> Börjar med 13</li>
-        <li><strong>Water:</strong> Börjar med 14</li>
-        <li><strong>Government/CSO:</strong> Börjar med 15</li>
-        <li><strong>Welfare/Services:</strong> Börjar med 16</li>
-        <li><strong>Transport:</strong> Börjar med 21</li>
-        <li><strong>Communications:</strong> Börjar med 22</li>
-        <li><strong>Energy:</strong> Börjar med 23</li>
-        <li><strong>Finance:</strong> Börjar med 24</li>
-        <li><strong>Business:</strong> Börjar med 25</li>
-        <li><strong>Agriculture/Forestry/Fishing:</strong> Börjar med 31</li>
-        <li><strong>Industry/Mining/Construction:</strong> Börjar med 32</li>
-        <li><strong>Trade/Tourism:</strong> Börjar med 33</li>
-        <li><strong>Environment:</strong> Börjar med 41</li>
-        <li><strong>Humanitarian/Reconstruction:</strong> Börjar med 72, 73, eller 74</li>
-        <li><strong>Multisector/Budget/Unspecified:</strong> Börjar med 43, 5, 6, eller 9</li>
-      </ul>
-    </body>
-  </html>
-`;
+          <!DOCTYPE html>
+          <html lang="en">
+            <head>
+              <meta charset="UTF-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <title>Category Mapping</title>
+              <style>
+                body {
+                  font-family: Arial, sans-serif;
+                  margin: 20px;
+                  padding: 20px;
+                  background-color: #f9f9f9;
+                  border: 1px solid #ccc;
+                  border-radius: 8px;
+                  color: #333;
+                  font-size: 12px;
+                  line-height: 1.6;
+                }
+                h2 {
+                  text-align: center;
+                  color: #4caf50;
+                }
+                ul {
+                  list-style-type: none;
+                  padding: 0;
+                }
+                li {
+                  margin: 5px 0;
+                }
+                strong {
+                  color: #333;
+                }
+              </style>
+            </head>
+            <body>
+              <h2>Sektorgrupper</h2>
+              <ul>
+                <li><strong>Education:</strong> Börjar med 11</li>
+                <li><strong>Health:</strong> Börjar med 12</li>
+                <li><strong>Population:</strong> Börjar med 13</li>
+                <li><strong>Water:</strong> Börjar med 14</li>
+                <li><strong>Government/CSO:</strong> Börjar med 15</li>
+                <li><strong>Welfare/Services:</strong> Börjar med 16</li>
+                <li><strong>Transport:</strong> Börjar med 21</li>
+                <li><strong>Communications:</strong> Börjar med 22</li>
+                <li><strong>Energy:</strong> Börjar med 23</li>
+                <li><strong>Finance:</strong> Börjar med 24</li>
+                <li><strong>Business:</strong> Börjar med 25</li>
+                <li><strong>Agriculture/Forestry/Fishing:</strong> Börjar med 31</li>
+                <li><strong>Industry/Mining/Construction:</strong> Börjar med 32</li>
+                <li><strong>Trade/Tourism:</strong> Börjar med 33</li>
+                <li><strong>Environment:</strong> Börjar med 41</li>
+                <li><strong>Humanitarian/Reconstruction:</strong> Börjar med 72, 73, eller 74</li>
+                <li><strong>Multisector/Budget/Unspecified:</strong> Börjar med 43, 5, 6, eller 9</li>
+              </ul>
+            </body>
+          </html>
+        `;
         const newWindow = window.open("", "_blank", "width=500,height=400");
         newWindow.document.write(infoContent);
       }
+
+      // Enable/Disable button based on selected models and text input
+      function updateButtonState() {
+        const selectedModels = document.querySelectorAll(
+          'input[name="selected_models"]:checked'
+        );
+        const descriptionInput = document.querySelector(
+          'textarea[name="description"]'
+        );
+        const submitButton = document.querySelector('button[type="submit"]');
+
+        // Check if at least one model is selected and no more than four
+        const isValidModelCount =
+          selectedModels.length >= 1 && selectedModels.length <= 4;
+        // Check if the description input is not empty
+        const isDescriptionValid = descriptionInput.value.trim() !== "";
+
+        // Disable button if either condition is not met
+        if (!isValidModelCount || !isDescriptionValid) {
+          submitButton.disabled = true;
+          submitButton.classList.add("disabled-button");
+        } else {
+          submitButton.disabled = false;
+          submitButton.classList.remove("disabled-button");
+        }
+      }
+
+      // Attach event listeners to checkboxes and description input
+      window.onload = function () {
+        const checkboxes = document.querySelectorAll(
+          'input[name="selected_models"]'
+        );
+
+        // Pre-select the checkboxes based on the selected models (from the form data)
+        const selectedModelsFromForm = {{ selected_models | tojson }};
+        checkboxes.forEach(function (checkbox) {
+          if (selectedModelsFromForm.includes(checkbox.value)) {
+            checkbox.checked = true;
+          }
+        });
+
+        checkboxes.forEach(function (checkbox) {
+          checkbox.addEventListener("change", updateButtonState);
+        });
+
+        const descriptionInput = document.querySelector(
+          'textarea[name="description"]'
+        );
+        descriptionInput.addEventListener("input", updateButtonState);
+
+        updateButtonState(); // Initialize button state based on the pre-selected models and description input
+      };
     </script>
   </head>
   <body>
@@ -149,28 +205,18 @@
 {{ request.form.get('description', '') }}</textarea
         >
         <div class="model-selection">
-          <h4>Välj fält:</h4>
+          <h4>Välj fält (max 4 stycken):</h4>
           {% for model in model_names %}
           <label>
-            <input
-              type="checkbox"
-              name="selected_models"
-              value="{{ model }}"
-              {%
-              if
-              model
-              in
-              selected_models
-              %}checked{%
-              endif
-              %}
-            />
+            <input type="checkbox" name="selected_models" value="{{ model }}" />
             {{ custom_names.get(model, model.capitalize()) }}
           </label>
           {% endfor %}
         </div>
 
-        <button type="submit">Få förslag</button>
+        <button type="submit" class="disabled-button" disabled>
+          Få förslag
+        </button>
       </form>
 
       {% if predictions %}
