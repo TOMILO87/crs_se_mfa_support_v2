@@ -11,43 +11,47 @@ app = Flask(__name__)
 # Enable CORS for all routes
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 
-# Paths to the model and tokenizer files
+# Paths to the model and tokenizer files (Add more models here as needed)
 MODEL_PATHS = {
-    "biodiversity": "../../models/biodiversity_model.keras",
-    "category": "../../models/category_model.keras",
-    "climateadaptation": "../../models/climateadaptation_model.keras",
-    "climatemitigation": "../../models/climatemitigation_model.keras",
-    "dig": "../../models/dig_model.keras",
-    "environment": "../../models/environment_model.keras",
-    "gender": "../../models/gender_model.keras",
-    "parenttype": "../../models/parenttype_model.keras",
-    "rmnch": "../../models/rmnch_model.keras",
+    "biodiversity": "/var/models/biodiversity_model.keras",
+    "category": "/var/models/category_model.keras",
+    "climateadaptation": "/var/models/climateadaptation_model.keras",
+    "climatemitigation": "/var/models/climatemitigation_model.keras",
+    "dig": "/var/models/dig_model.keras",
+    "environment": "/var/models/environment_model.keras",
+    "gender": "/var/models/gender_model.keras",
+    "parenttype": "/var/models/parenttype_model.keras",
+    #"recipientname": "/var/models/recipientname_model.keras",
+    "rmnch": "/var/models/rmnch_model.keras"
 }
 
 TOKENIZER_PATHS = {
-    "biodiversity": "../../models/biodiversity_tokenizer.pickle",
-    "category": "../../models/category_tokenizer.pickle",
-    "climateadaptation": "../../models/climateadaptation_tokenizer.pickle",
-    "climatemitigation": "../../models/climatemitigation_tokenizer.pickle",
-    "dig": "../../models/dig_tokenizer.pickle",
-    "environment": "../../models/environment_tokenizer.pickle",
-    "gender": "../../models/gender_tokenizer.pickle",
-    "parenttype": "../../models/parenttype_tokenizer.pickle",
-    "rmnch": "../../models/rmnch_tokenizer.pickle",
+    "biodiversity": "/var/models/biodiversity_tokenizer.pickle",
+    "category": "/var/models/category_tokenizer.pickle",
+    "climateadaptation": "/var/models/climateadaptation_tokenizer.pickle",
+    "climatemitigation": "/var/models/climatemitigation_tokenizer.pickle",
+    "dig": "/var/models/dig_tokenizer.pickle",
+    "environment": "/var/models/environment_tokenizer.pickle",
+    "gender": "/var/models/gender_tokenizer.pickle",
+    "parenttype": "/var/models/parenttype_tokenizer.pickle",
+    #"recipientname": "/var/models/recipientname_tokenizer.pickle",
+    "rmnch": "/var/models/rmnch_tokenizer.pickle"
 }
 
 LABEL_ENCODER_PATHS = {
-    "biodiversity": "../../models/biodiversity_label_encoder.pickle",
-    "category": "../../models/category_label_encoder.pickle",
-    "climateadaptation": "../../models/climateadaptation_label_encoder.pickle",
-    "climatemitigation": "../../models/climatemitigation_label_encoder.pickle",
-    "dig": "../../models/dig_label_encoder.pickle",
-    "environment": "../../models/environment_label_encoder.pickle",
-    "gender": "../../models/gender_label_encoder.pickle",
-    "parenttype": "../../models/parenttype_label_encoder.pickle",
-    "rmnch": "../../models/rmnch_label_encoder.pickle",
+    "biodiversity": "/var/models/biodiversity_label_encoder.pickle",
+    "category": "/var/models/category_label_encoder.pickle",
+    "climateadaptation": "/var/models/climateadaptation_label_encoder.pickle",
+    "climatemitigation": "/var/models/climatemitigation_label_encoder.pickle",
+    "dig": "/var/models/dig_label_encoder.pickle",
+    "environment": "/var/models/environment_label_encoder.pickle",
+    "gender": "/var/models/gender_label_encoder.pickle",
+    "parenttype": "/var/models/parenttype_label_encoder.pickle",
+    #"recipientname": "/var/models/recipientname_label_encoder.pickle",
+    "rmnch": "/var/models/rmnch_label_encoder.pickle"
 }
 
+# Map models to custom names
 CUSTOM_NAMES = {
     "biodiversity": "Biologisk mångfald",
     "category": "Sektor (grupp)",
@@ -57,7 +61,8 @@ CUSTOM_NAMES = {
     "environment": "Miljö",
     "gender": "Jämställdhet",
     "parenttype": "Samarbetsform",
-    "rmnch": "Barnhälsa och mödravård",
+    "recipientname": "Mottagarland (låg träffsäkerhet)",
+    "rmnch": "Barnhälsa och mödravård"
 }
 
 def preprocess_input(description, tokenizer, maxlen=200):
